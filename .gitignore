@@ -1,0 +1,12 @@
+node_modules/
+public/
+.cache/
+.env
+.env.production
+.env.development
+public/
+.vscode/
+
+# Ignore DS_Store
+.DS_Store
+**/.DS_Store
