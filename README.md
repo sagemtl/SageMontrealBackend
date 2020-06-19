@@ -4,7 +4,7 @@ Install dependencies using npm:
 ### `yarn install`
 
 Create `.env` with:
-`STRIPE_SECRET_KEY=<PUT_YOUR_KEY_HERE>` and 
+`SECRET_KEY=<PUT_YOUR_KEY_HERE>` and 
 `ENDPOINT_SECRET_KEY=<PUT_YOUR_KEY_HERE>`
 
 Install the Stripe CLI from (https://github.com/stripe/stripe-cli#installation) to install which we'll use for webhook testing.

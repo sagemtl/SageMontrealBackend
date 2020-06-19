@@ -66,6 +66,36 @@ app.post('/webhook', function(request, response) {
 
   response.sendStatus(200);
 });
+
+app.get("/product/:prod_id", async (req, res) =>{
+  try{
+    const product = await stripe.products.retrieve(req.params.prod_id);
+    res.status(200).json(product);
+  }
+  catch(err){
+    console.error(err);
+    res.status(err.statusCode).send(err);
+  }
+
+});
+
+app.post("/product/:prod_id", async (req, res) =>{
+  try{
+    const product = await stripe.products.update(
+      req.params.prod_id,
+      req.body
+      );
+    res.status(200).json(product);
+  }
+  catch(err){
+    console.error(err);
+    res.status(err.statusCode).send(err);
+  }
+
+});
+
+
+
 // PORT, Listen
 const port = 5000;
 app.listen(port, () => console.log(`App running on PORT ${port}`));
