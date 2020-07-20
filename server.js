@@ -14,7 +14,12 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.post("/payment_intent", async (req, res) => {
+const corsOptions = {
+  origin: process.env.ALLOWED_ORGIN,
+  optionsSuccessStatus: 200
+}
+
+app.post("/payment_intent", cors(corsOptions), async (req, res) => {
   const { price, receipt_email } = req.body;
 
   try {
@@ -33,7 +38,7 @@ app.post("/payment_intent", async (req, res) => {
   }
 });
 
-app.post('/webhook', function(request, response) {
+app.post('/webhook', cors(corsOptions), function(request, response) {
   const sig = request.headers['stripe-signature'];
   const body = request.body;
 
@@ -67,7 +72,7 @@ app.post('/webhook', function(request, response) {
   response.sendStatus(200);
 });
 
-app.get("/product/:prod_id", async (req, res) =>{
+app.get("/product/:prod_id", cors(corsOptions), async (req, res) =>{
   try{
     const product = await stripe.products.retrieve(req.params.prod_id);
     res.status(200).json(product);
@@ -79,7 +84,7 @@ app.get("/product/:prod_id", async (req, res) =>{
 
 });
 
-app.post("/product/:prod_id", async (req, res) =>{
+app.post("/product/:prod_id", cors(corsOptions), async (req, res) =>{
   try{
     const product = await stripe.products.update(
       req.params.prod_id,
