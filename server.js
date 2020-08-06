@@ -131,50 +131,6 @@ app.post("/create/sku", cors(corsOptions), async (req, res) =>{
 
 });
 
-// create stripe product
-// app.post("/create/product", cors(corsOptions), async (req, res) =>{
-//   try{
-//     const product = await stripe.products.create(
-//       {
-//         name: "lighter 2.0",
-//         active: true,
-//         description: "LIGHTERERRRREREr",
-//         type: "good"
-//       }
-//       );
-//     res.status(200).json(product);
-//   }
-//   catch(err){
-//     console.error(err);
-//     res.status(err.statusCode).send(err);
-//   }
-
-// });
-
-// // create stripe sku
-// app.post("/create/sku", cors(corsOptions), async (req, res) =>{
-//   try{
-//     const product = await stripe.skus.create(
-//       {
-//       price: 1500,
-//       currency: 'cad',
-//       inventory: {type: 'finite', quantity: 500},
-//       product: 'prod_HHPbCnslkyaHCK',
-//       attributes: {
-//         name: "new sku test"
-//       }
-//       }
-//     );
-//     console.log(product);
-//     res.status(200).json(product);
-//   }
-//   catch(err){
-//     console.error(err);
-//     res.status(err.statusCode).send(err);
-//   }
-
-// });
-
 
 // PORT, Listen
 const port = 5000;
