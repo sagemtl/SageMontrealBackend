@@ -72,6 +72,7 @@ app.post('/webhook', cors(corsOptions), function(request, response) {
   response.sendStatus(200);
 });
 
+// get stripe product
 app.get("/product/:prod_id", cors(corsOptions), async (req, res) =>{
   try{
     const product = await stripe.products.retrieve(req.params.prod_id);
@@ -84,6 +85,7 @@ app.get("/product/:prod_id", cors(corsOptions), async (req, res) =>{
 
 });
 
+// update stripe product
 app.post("/product/:prod_id", cors(corsOptions), async (req, res) =>{
   try{
     const product = await stripe.products.update(
@@ -99,6 +101,35 @@ app.post("/product/:prod_id", cors(corsOptions), async (req, res) =>{
 
 });
 
+// create stripe product
+app.post("/create/product", cors(corsOptions), async (req, res) =>{
+  try{
+    const product = await stripe.products.create(
+      req.body
+      );
+    res.status(200).json(product);
+  }
+  catch(err){
+    console.error(err);
+    res.status(err.statusCode).send(err);
+  }
+
+});
+
+// // create stripe sku
+app.post("/create/sku", cors(corsOptions), async (req, res) =>{
+  try{
+    const product = await stripe.skus.create(
+      req.body
+    );
+    res.status(200).json(product);
+  }
+  catch(err){
+    console.error(err);
+    res.status(err.statusCode).send(err);
+  }
+
+});
 
 
 // PORT, Listen
