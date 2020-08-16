@@ -3,6 +3,7 @@ const cors = require("cors");
 const uuid = require("uuid");
 require("dotenv/config");
 const fs = require('fs');
+const nodemailer = require('nodemailer');
 
 const stripe = require("stripe")(process.env.SECRET_KEY);
 const endpointSecret = process.env.ENDPOINT_SECRET_KEY;
@@ -180,6 +181,35 @@ app.post("/inventory/:sku_id", cors(corsOptions), async (req, res) =>{
   }
 
 });
+let transporter = nodemailer.createTransport({
+  host: process.env.EMAIL_HOST,
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD
+  }
+});
+
+app.post("/contact", (req, res) => {
+  const { name, email, subject, message } = req.body;
+  var content = `name: ${name} \n email: ${email} \n subject: ${subject} \n message: ${message}`;
+
+  const mail = {
+    from: process.env.EMAIL_USER,
+    to: process.env.EMAIL_USER,
+    subject: subject,
+    text: content
+  }
+
+  transporter.sendMail(mail, (err, data) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send({ message: 'Contact email sent successfully', data });
+    }
+  })
+})
 
 // PORT, Listen
 const port = 5000;
