@@ -117,7 +117,7 @@ app.post("/create/product", cors(corsOptions), async (req, res) =>{
 
 });
 
-// // create stripe sku
+// create stripe sku
 app.post("/create/sku", cors(corsOptions), async (req, res) =>{
   try{
     const product = await stripe.skus.create(
@@ -132,6 +132,55 @@ app.post("/create/sku", cors(corsOptions), async (req, res) =>{
 
 });
 
+// get sku
+app.get("/sku/:sku_id", cors(corsOptions), async (req, res) =>{
+  try{
+    const sku = await stripe.skus.retrieve(req.params.sku_id);
+    res.status(200).json(sku);
+  }
+  catch(err){
+    console.error(err);
+    res.status(err.statusCode).send(err);
+  }
+
+});
+
+// get sku inventory
+app.get("/inventory/:sku_id", cors(corsOptions), async (req, res) =>{
+  try{
+    const sku = await stripe.skus.retrieve(req.params.sku_id);
+    var inventory = new Object;
+    inventory.sku_id = sku.id;
+    inventory.quantity = sku.inventory? (sku.inventory.quantity? sku.inventory.quantity : 0) : 0;
+    res.status(200).json(inventory);
+  }
+  catch(err){
+    console.error(err);
+    res.status(err.statusCode).send(err);
+  }
+
+});
+
+
+// set inventory for skus
+app.post("/inventory/:sku_id", cors(corsOptions), async (req, res) =>{
+  try{
+    var inventory_info = new Object;
+    inventory_info.type = "finite";
+    inventory_info.quantity = req.body.quantity;
+
+    const product = await stripe.skus.update(
+      req.params.sku_id,
+      { inventory: inventory_info }
+    );
+    res.status(200).json(product);
+  }
+  catch(err){
+    console.error(err);
+    res.status(err.statusCode).send(err);
+  }
+
+});
 let transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
   port: 465,
