@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const uuid = require("uuid");
+const MongoClient = require('mongodb').MongoClient;
 require("dotenv/config");
 const fs = require('fs');
 const nodemailer = require('nodemailer');
@@ -14,6 +15,10 @@ const app = express();
 // Middlewares
 app.use(express.json());
 app.use(cors());
+
+// Database configuration
+const uri =  `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASS}@sage.864ng.mongodb.net/${process.env.MONGODB_DBNAME}?retryWrites=true&w=majority`;
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const corsOptions = {
   origin: process.env.ALLOWED_ORGIN,
