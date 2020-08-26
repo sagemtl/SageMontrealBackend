@@ -4,7 +4,8 @@
   "author": "sagemtl",
   "main": "index.js",
   "scripts": {
-    "server": "nodemon server"
+    "server": "nodemon server",
+    "start": "node server.js"
   },
   "dependencies": {
     "concurrently": "^5.1.0",
