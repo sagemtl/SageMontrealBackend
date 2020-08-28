@@ -19,6 +19,7 @@ app.use(cors());
 // Database configuration
 const uri =  `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASS}@sage.864ng.mongodb.net/${process.env.MONGODB_DBNAME}?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+client.connect();
 
 const corsOptions = {
   origin: process.env.ALLOWED_ORGIN,
@@ -151,41 +152,76 @@ app.get("/sku/:sku_id", cors(corsOptions), async (req, res) =>{
 });
 
 // get sku inventory
-app.get("/inventory/:sku_id", cors(corsOptions), async (req, res) =>{
+// app.get("/inventory/:sku_id", cors(corsOptions), async (req, res) =>{
+//   try{
+//     const sku = await stripe.skus.retrieve(req.params.sku_id);
+//     var inventory = new Object;
+//     inventory.sku_id = sku.id;
+//     inventory.quantity = sku.inventory? (sku.inventory.quantity? sku.inventory.quantity : 0) : 0;
+//     res.status(200).json(inventory);
+//   }
+//   catch(err){
+//     console.error(err);
+//     res.status(err.statusCode).send(err);
+//   }
+
+// });
+app.get("/inventory/:sku_info", cors(corsOptions), async (req, res) =>{
   try{
-    const sku = await stripe.skus.retrieve(req.params.sku_id);
+    const info = req.params.sku_info.split("-");
+    const query = { item: info[0], color: info[1], size: info[2] };
+
+    const db = client.db(process.env.MONGODB_DBNAME);
+    const queryResult = await db.collection('inventory').findOne(query);
+
+    if(queryResult === `undefined`) throw "query unsuccesful";
     var inventory = new Object;
-    inventory.sku_id = sku.id;
-    inventory.quantity = sku.inventory? (sku.inventory.quantity? sku.inventory.quantity : 0) : 0;
+    inventory.quantity = queryResult.qty;
     res.status(200).json(inventory);
   }
   catch(err){
     console.error(err);
     res.status(err.statusCode).send(err);
   }
-
 });
 
 
 // set inventory for skus
-app.post("/inventory/:sku_id", cors(corsOptions), async (req, res) =>{
-  try{
-    var inventory_info = new Object;
-    inventory_info.type = "finite";
-    inventory_info.quantity = req.body.quantity;
+// app.post("/inventory/:sku_id", cors(corsOptions), async (req, res) =>{
+//   try{
+//     var inventory_info = new Object;
+//     inventory_info.type = "finite";
+//     inventory_info.quantity = req.body.quantity;
 
-    const product = await stripe.skus.update(
-      req.params.sku_id,
-      { inventory: inventory_info }
-    );
-    res.status(200).json(product);
+//     const product = await stripe.skus.update(
+//       req.params.sku_id,
+//       { inventory: inventory_info }
+//     );
+//     res.status(200).json(product);
+//   }
+//   catch(err){
+//     console.error(err);
+//     res.status(err.statusCode).send(err);
+//   }
+// });
+app.post("/inventory/:sku_info", cors(corsOptions), async (req, res) =>{
+  try{
+
+    const info = req.params.sku_info.split("-");
+    const query = { item: info[0], color: info[1], size: info[2] };
+
+    const db = client.db(process.env.MONGODB_DBNAME);
+    const queryResult = await db.collection('inventory').findOneAndUpdate(query, { $inc : { "qty" : req.body.quantity } });
+
+    res.status(200);
   }
   catch(err){
     console.error(err);
     res.status(err.statusCode).send(err);
   }
-
 });
+
+
 let transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
   port: 465,
