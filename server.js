@@ -27,25 +27,9 @@ const corsOptions = {
 }
 
 app.post("/payment_intent", cors(corsOptions), async (req, res) => {
-  const { price, receipt_email, shipping} = req.body;
+  const { price, receipt_email, shipping, orderItems} = req.body;
 
   try {
-    const order = await stripe.orders.create({
-      currency: 'cad',
-      items: [
-        {type: 'sku', parent: 'sku_HufUprUXMS6JX6'},
-      ],
-      shipping: {
-        name: 'Jenny Rosen',
-        address: {
-          line1: '1234 Main Street',
-          city: 'San Francisco',
-          state: 'CA',
-          country: 'US',
-          postal_code: '94111',
-        },
-      },
-    });
 
     /*
     const charges = await stripe.charges.create(
@@ -67,13 +51,29 @@ app.post("/payment_intent", cors(corsOptions), async (req, res) => {
       currency: "CAD",
       description: `Purchased Item`,
       receipt_email: receipt_email,
-      metadata: {
-        order_id: order.id,
-      },
       shipping: shipping
     });
 
     res.status(200).json({ client_secret: intent.client_secret });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  }
+});
+
+app.post("/create_order", cors(corsOptions), async (req, res) => {
+  const { receipt_email, shipping, orderItems, metadata} = req.body;
+
+  try {
+    const order = await stripe.orders.create({
+      currency: 'cad',
+      email: receipt_email,
+      items: orderItems,
+      shipping: shipping,
+      metadata: metadata,
+    });
+
+    res.sendStatus(200);
   } catch (err) {
     console.error(err);
     res.status(500).send("Server Error");
@@ -117,7 +117,7 @@ app.post("/calculateShipping", cors(corsOptions), async (req, res) => {
           id: 'small-packet-shipping',
           label: 'Small Packet - Air',
           detail: 'Arrives in 6 to 12 business days',
-          amount: 2000,
+          amount: 2200,
         },
       ]});
     }
