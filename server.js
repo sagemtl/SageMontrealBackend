@@ -293,7 +293,12 @@ app.post("/inventory/:sku_info", cors(corsOptions), async (req, res) =>{
     const query = { item: info[0], color: info[1], size: info[2] };
 
     const db = client.db(process.env.MONGODB_DBNAME);
-    const queryResult = await db.collection('inventory').findOneAndUpdate(query, { $inc : { "qty" : req.body.quantity } });
+    const queryResult = await db.collection('inventory').findOne(query);
+
+    if(queryResult === `undefined`) throw "query unsuccesful";
+    var qty = queryResult.qty;
+
+    const queryResult2 = await db.collection('inventory').findOneAndUpdate(query, { $inc : { "qty" : -req.body.quantity } });
 
     res.status(200);
   }
