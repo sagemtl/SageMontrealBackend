@@ -9,6 +9,7 @@ const nodemailer = require('nodemailer');
 // Import Routes
 const inventory_routes = require('./routes/inventory');
 const orders_routes = require('./routes/orders');
+const ktv_routes = require('./routes/ktv');
 
 // Middlewares
 app.use(express.json());
@@ -17,6 +18,7 @@ app.use(cors());
 // Routes Middleware
 app.use('/inventory-api', inventory_routes);
 app.use('/orders-api', orders_routes);
+app.use('/ktv-api', ktv_routes);
 
 
 // Contact endpoint

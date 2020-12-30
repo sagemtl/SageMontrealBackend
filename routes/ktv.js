@@ -17,3 +17,24 @@ const corsOptions = {
   origin: process.env.ALLOWED_ORIGIN,
   optionsSuccessStatus: 200
 }
+
+// get all songs
+router.get("/songs", cors(corsOptions), async (req, res) =>{
+  try{
+
+    const db = client.db(process.env.MONGODB_DBNAME);
+    const queryResult = await db.collection('ktv-songs').find().toArray();
+
+    if(queryResult === `undefined`) throw "query unsuccesful";
+
+    console.log(queryResult);
+    res.status(200).json(queryResult);
+  }
+  catch(err){
+    console.error(err);
+    res.status(err.statusCode).send(err);
+  }
+
+});
+
+module.exports = router;
