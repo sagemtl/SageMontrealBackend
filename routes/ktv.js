@@ -18,7 +18,7 @@ const corsOptions = {
   optionsSuccessStatus: 200
 }
 
-// get all songs
+// get all songs in ktv-songs
 router.get("/songs", cors(corsOptions), async (req, res) =>{
   try{
 
@@ -27,7 +27,7 @@ router.get("/songs", cors(corsOptions), async (req, res) =>{
 
     if(queryResult === `undefined`) throw "query unsuccesful";
 
-    console.log(queryResult);
+    
     res.status(200).json(queryResult);
   }
   catch(err){
@@ -36,5 +36,46 @@ router.get("/songs", cors(corsOptions), async (req, res) =>{
   }
 
 });
+
+// get one song info from ktv-songs
+router.get("/song-info/:title_id", cors(corsOptions), async (req, res) =>{
+  try{
+
+    const title_id = req.params.title_id;
+    const query = { title_id: title_id };
+
+    const db = client.db(process.env.MONGODB_DBNAME);
+    const queryResult = await db.collection('ktv-songs').findOne(query);
+
+    if(queryResult === `undefined`) throw "query unsuccesful";
+
+    res.status(200).json(queryResult);
+  }
+  catch(err){
+    console.error(err);
+    res.status(err.statusCode).send(err);
+  }
+});
+
+// get one lyrics from ktv-song-lyrics
+router.get("/lyrics/:title_id", cors(corsOptions), async (req, res) =>{
+  try{
+
+    const title_id = req.params.title_id;
+    const query = { title_id: title_id };
+
+    const db = client.db(process.env.MONGODB_DBNAME);
+    const queryResult = await db.collection('ktv-song-lyrics').findOne(query);
+
+    if(queryResult === `undefined`) throw "query unsuccesful";
+
+    res.status(200).json(queryResult);
+  }
+  catch(err){
+    console.error(err);
+    res.status(err.statusCode).send(err);
+  }
+});
+
 
 module.exports = router;
