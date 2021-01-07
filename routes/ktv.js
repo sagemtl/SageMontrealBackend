@@ -1,12 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const cors = require("cors");
-const uuid = require("uuid");
 const MongoClient = require('mongodb').MongoClient;
 require("dotenv/config");
-const fs = require('fs');
-
-const stripe = require("stripe")(process.env.SECRET_KEY);
 
 // Database configuration
 const uri =  `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASS}@sage.864ng.mongodb.net/${process.env.MONGODB_DBNAME}?retryWrites=true&w=majority`;
@@ -77,5 +73,18 @@ router.get("/lyrics/:title_id", cors(corsOptions), async (req, res) =>{
   }
 });
 
+// get score based on original song audio data
+router.post("/score", cors(corsOptions), async (req, res) =>{
+  try{
+    console.log(req.body.titleId);
+    const audioData = JSON.parse(req.body.audioData);
+    console.log(audioData);
+    res.status(200).json(84);
+  }
+  catch(err){
+    console.error(err);
+    res.status(err.statusCode).send(err);
+  }
+})
 
 module.exports = router;
