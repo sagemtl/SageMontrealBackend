@@ -74,9 +74,10 @@ router.get("/lyrics/:title_id", cors(corsOptions), async (req, res) =>{
 });
 
 // get score based on original song audio data
-router.post("/score", cors(corsOptions), async (req, res) =>{
+router.post("/score/:title_id", cors(corsOptions), async (req, res) =>{
   try{
-    console.log(req.body.titleId);
+    const title_id = req.params.title_id;
+    console.log(title_id);
     const audioData = JSON.parse(req.body.audioData);
     console.log(audioData);
     res.status(200).json(84);
