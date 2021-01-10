@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const cors = require("cors");
 const MongoClient = require('mongodb').MongoClient;
+const similarityScore = require('../helpers/similarityScore');
 require("dotenv/config");
 
 // Database configuration
@@ -78,8 +79,14 @@ router.post("/score/:title_id", cors(corsOptions), async (req, res) =>{
   try{
     const title_id = req.params.title_id;
     console.log(title_id);
-    const audioData = JSON.parse(req.body.audioData);
-    console.log(audioData);
+    // const audioData = JSON.parse(req.body.audioData);
+    // console.log(audioData);
+
+    const query = { title_id: title_id };
+    const db = client.db(process.env.MONGODB_DBNAME);
+    const queryResult = await db.collection('ktv-original-data').findOne(query);
+    original_data = JSON.parse(queryResult.audio_data)
+    console.log(original_data)
     res.status(200).json(84);
   }
   catch(err){
