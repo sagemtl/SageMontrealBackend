@@ -78,21 +78,26 @@ router.get("/lyrics/:title_id", cors(corsOptions), async (req, res) =>{
 router.post("/score/:title_id", cors(corsOptions), async (req, res) =>{
   try{
     const title_id = req.params.title_id;
-    console.log(title_id);
-    // const audioData = JSON.parse(req.body.audioData);
-    // console.log(audioData);
-
     const query = { title_id: title_id };
+
     const db = client.db(process.env.MONGODB_DBNAME);
     const queryResult = await db.collection('ktv-original-data').findOne(query);
-    original_data = JSON.parse(queryResult.audio_data)
-    console.log(original_data)
+
+    console.log(title_id);
+    console.log(req.body.audioData);
+    const parsedData = JSON.parse(queryResult.audio_data);
+    const audioData = JSON.parse(req.body.audioData);
+
+    // console.log(parsedData)
+    console.log("audio data")
+    console.log(audioData)
+
     res.status(200).json(84);
   }
   catch(err){
     console.error(err);
     res.status(err.statusCode).send(err);
   }
-})
+});
 
 module.exports = router;
