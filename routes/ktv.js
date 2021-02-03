@@ -84,13 +84,11 @@ router.post("/score/:title_id", cors(corsOptions), async (req, res) =>{
     const queryResult = await db.collection('ktv-original-data').findOne(query);
 
     console.log(title_id);
-    console.log(req.body.audioData);
     const parsedData = JSON.parse(queryResult.audio_data);
+    // const audioData = req.body.audio_data;
     const audioData = JSON.parse(req.body.audioData);
-
-    // console.log(parsedData)
-    console.log("audio data")
-    console.log(audioData)
+    console.log(audioData);
+    similarityScore(audioData, parsedData);
 
     res.status(200).json(84);
   }
