@@ -74,13 +74,34 @@ router.get("/lyrics/:title_id", cors(corsOptions), async (req, res) =>{
   }
 });
 
-// get score based on original song audio data
+// get leaderboard for one song based on title_id
+router.get("/leaderboard/:title_id", cors(corsOptions), async (req, res) => {
+  try{
+
+    const title_id = req.params.title_id;
+    const query = { title_id: title_id };
+
+    const db = client.db(process.env.MONGODB_DBNAME);
+    const queryResult = await db.collection('ktv-leaderboard').findOne(query);
+
+    if(queryResult === `undefined`) throw "query unsuccesful";
+
+    const scoresJson = queryResult.scores.map(entry => JSON.parse(entry))
+    res.status(200).json(scoresJson);
+  }
+  catch(err){
+    console.error(err);
+    res.status(err.statusCode).send(err);
+  }
+});
+
 router.post("/score/:title_id", cors(corsOptions), async (req, res) =>{
   try{
     const title_id = req.params.title_id;
     const query = { title_id: title_id };
 
     const db = client.db(process.env.MONGODB_DBNAME);
+
     const queryResult = await db.collection('ktv-original-data').findOne(query);
 
     const parsedData = JSON.parse(queryResult.audio_data);
