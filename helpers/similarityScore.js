@@ -5,17 +5,16 @@ module.exports = function(userData, originalData) {
   const originalAverage = getAverage(originalData);
   const userAverage = getAverage(userData);
 
-  console.log(originalAverage)
-  console.log(userAverage)
+  const originalStd = std(originalData, originalAverage);
+  const userStd = std(userData, userAverage);
 
   for (i = 1; i < len; i++) {
-    current_difference = verifyDelta(userData[i].audioData, originalData[i].audioData, 0.128, userAverage, originalAverage);
+    current_difference = verifyDelta(userData[i].audioData, originalData[i].audioData, 0.128, userStd, originalStd);
     if (current_difference) {
       difference += current_difference;
     }
-    console.log(difference)
   }
-  console.log(difference / len);
+  return (difference / len) * 100;
 }
 
 const absDifference = (arr1, arr2, userAvg, originalAvg) => {
