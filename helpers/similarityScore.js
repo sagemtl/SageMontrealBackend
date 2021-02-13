@@ -1,53 +1,68 @@
 module.exports = function(userData, originalData) {
-  let difference = 0;
-  let len = Math.min(userData.length, originalData.length);
+  let score = 0;
+  let len = userData.length;
+  const count = {user: [0,0,0], orig: [0,0,0]};
 
-  const userDataExtremes = {min: getMin(userData), max: getMax(userData)};
-  const origDataExtremes = {min: getMin(originalData), max: getMax(originalData)};
+  let userPtr = 1;
+  let originalPtr = 1;
 
-  for (i = 1; i < len; i++) {
-    current_difference = verifyDelta(userData[i].audioData, originalData[i].audioData, 0.02, userDataExtremes, origDataExtremes);
+  while (userPtr < len) {
 
-    if (current_difference) {
-      difference += current_difference;
-    }
+    let currTimeDiff = Math.abs(originalData[originalPtr].audioTime - userData[userPtr].audioTime);
+
+    while (originalPtr + 1 < originalData.length && 
+      currTimeDiff >= Math.abs(originalData[originalPtr + 1].audioTime - userData[userPtr].audioTime)) {
+        originalPtr ++;
+        currTimeDiff = Math.abs(originalData[originalPtr].audioTime - userData[userPtr].audioTime);
+      }
+
+    const current_score = verifyDelta(userData[userPtr].audioData, originalData[originalPtr].audioData,count);
+    score += current_score;
+    userPtr ++;
   }
-
-  return difference / len;
+  console.log(count);
+  return score / len * 100;
 }
 
-const verifyDelta = (userArr, origArr, delta, userDataExtremes, origDataExtremes) => {
-  let res = 0;
-  const arr1 = normalize(userArr, userDataExtremes);
-  const arr2 = normalize(origArr, origDataExtremes);
+const verifyDelta = (userArr, origArr, count) => {
+  
+  const userPitch = getPitchLevel(userArr);
+  const origPitch = getPitchLevel(origArr);
+  count.user[userPitch] ++;
+  count.orig[origPitch] ++;
 
-  for(let i = 0; i < arr1.length; i++) {
-    const user = arr1[i];
-    const orig = arr2[i];
-    if (Math.abs((user || 0) - (orig || 0)) <= delta) {
-      res += 1;
-    }
-  };
-  return res / arr1.length;
+  return (userPitch === origPitch) ? 1 : 0;
 }
 
-const normalize = (arr, dataExtremes) => {
-  const maxVal = dataExtremes.max;
-  const minVal = dataExtremes.min;
+// Pitch Rule:
 
-  return arr.map((el) => maxVal === minVal ? 0.5 : (el - minVal) / (maxVal - minVal));
+// 0 = silence
+// 1 = low voice
+// 2 = high voice
+
+const getPitchLevel = (wave) => {
+  let mse = meanSquaredDifference(wave);
+  
+  if (mse <= 1) {
+    return 0;
+  }
+  else if (mse <= 20) {
+    return 1;
+  }
+  else {
+    return 2;
+  }
 }
 
-const getMin = (arr) => {
-  const minVals = arr.map((el) => Math.min(...el.audioData));
-  return Math.min(...minVals);
-}
+const meanSquaredDifference = (arr) => {
+  let error = 0;
+	for (let i = 0; i < arr.length; i++) {
+		error += Math.pow((arr[i] - 128), 2);
+	}
+	return error / arr.length;
+};
 
-const getMax = (arr) => {
-  const maxVals = arr.map((el) => Math.max(...el.audioData));
-  return Math.max(...maxVals);
-}
 
 const scoreModifier = (score) => {
-  return 2.5 * score ^ 2 * 100;
+  return Math.min(1, 2 * Math.pow(score, 2));
 }
