@@ -21,7 +21,7 @@ module.exports = function(userData, originalData) {
     userPtr ++;
   }
   console.log(count);
-  return score / len * 100;
+  return scoreModifier(score / len) * 100;
 }
 
 const verifyDelta = (userArr, origArr, count) => {
@@ -64,5 +64,10 @@ const meanSquaredDifference = (arr) => {
 
 
 const scoreModifier = (score) => {
-  return Math.min(1, 2 * Math.pow(score, 2));
+
+  if (score <= 0.5427){
+    return 2 * Math.pow(score, 2);
+  }
+
+  return Math.min(1, 1.5 * (score - 0.15));
 }
