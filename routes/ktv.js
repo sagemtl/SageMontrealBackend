@@ -98,5 +98,35 @@ router.get("/leaderboard/:title_id", cors(corsOptions), async (req, res) => {
   }
 });
 
+// add to leaderboard for one song
+router.post("/leaderboard/:title_id", cors(corsOptions), async (req, res) => {
+  try{
+
+    const title_id = req.params.title_id;
+    const name=req.body.name;
+    const score=req.body.score;
+    const query = { title_id: title_id };
+
+    const db = client.db(process.env.MONGODB_DBNAME);
+    let queryResult = await db.collection('ktv-leaderboard').findOne(query);
+
+    if(queryResult === `undefined`) throw "query unsuccesful";
+
+    const newLeaderboard = queryResult.scores.push({name:name,score:score});
+    console.log(queryResult.scores);
+    const sortedLeadboard = queryResult.scores.sort();
+    console.log(sortedLeadboard);
+    const rank = sortedLeadboard.findIndex((entry)=>{entry.name==name && entry.score==score});
+    const queryResult2 = await db.collection('ktv-leaderboard').findOneAndUpdate(query, { $inc : { "scores" : -req.body.quantity } });
+
+
+    res.status(200).json(rank);
+  }
+  catch(err){
+    console.error(err);
+    res.status(err.statusCode).send(err);
+  }
+});
+
 
 module.exports = router;
