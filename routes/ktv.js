@@ -119,7 +119,7 @@ router.post("/leaderboard/:title_id", cors(corsOptions), async (req, res) => {
     const leaderboardString = sortedLeadboard.map(entry => JSON.stringify(entry))
     const queryResult2 = await db.collection('ktv-leaderboard').findOneAndUpdate(query, { $set : { "scores" : leaderboardString } });
 
-    res.status(200).json(rank);
+    res.status(200).json({rank:rank, total:sortedLeadboard.length});
   }
   catch(err){
     console.error(err);
