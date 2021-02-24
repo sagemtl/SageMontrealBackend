@@ -108,17 +108,16 @@ router.post("/leaderboard/:title_id", cors(corsOptions), async (req, res) => {
     const query = { title_id: title_id };
 
     const db = client.db(process.env.MONGODB_DBNAME);
-    let queryResult = await db.collection('ktv-leaderboard').findOne(query);
+    const queryResult = await db.collection('ktv-leaderboard').findOne(query);
 
     if(queryResult === `undefined`) throw "query unsuccesful";
+    let scoresJson = queryResult.scores.map(entry => JSON.parse(entry))
 
-    const newLeaderboard = queryResult.scores.push({name:name,score:score});
-    console.log(queryResult.scores);
-    const sortedLeadboard = queryResult.scores.sort();
-    console.log(sortedLeadboard);
-    const rank = sortedLeadboard.findIndex((entry)=>{entry.name==name && entry.score==score});
-    const queryResult2 = await db.collection('ktv-leaderboard').findOneAndUpdate(query, { $inc : { "scores" : -req.body.quantity } });
-
+    scoresJson.push({name:name,score:score});
+    const sortedLeadboard = scoresJson.sort((a, b) => (a.score > b.score) ? -1 : 1);
+    const rank = sortedLeadboard.findIndex((entry)=>(entry.name==name && entry.score==score)) + 1;
+    const leaderboardString = sortedLeadboard.map(entry => JSON.stringify(entry))
+    const queryResult2 = await db.collection('ktv-leaderboard').findOneAndUpdate(query, { $set : { "scores" : leaderboardString } });
 
     res.status(200).json(rank);
   }
