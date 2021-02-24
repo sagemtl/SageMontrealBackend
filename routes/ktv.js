@@ -1,12 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const cors = require("cors");
-const uuid = require("uuid");
 const MongoClient = require('mongodb').MongoClient;
+const similarityScore = require('../helpers/similarityScore');
 require("dotenv/config");
-const fs = require('fs');
-
-const stripe = require("stripe")(process.env.SECRET_KEY);
 
 // Database configuration
 const uri =  `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASS}@sage.864ng.mongodb.net/${process.env.MONGODB_DBNAME}?retryWrites=true&w=majority`;
@@ -120,6 +117,30 @@ router.post("/leaderboard/:title_id", cors(corsOptions), async (req, res) => {
     const queryResult2 = await db.collection('ktv-leaderboard').findOneAndUpdate(query, { $set : { "scores" : leaderboardString } });
 
     res.status(200).json({rank:rank, total:sortedLeadboard.length});
+  }
+  catch(err){
+    console.error(err);
+    res.status(err.statusCode).send(err);
+  }
+});
+
+router.post("/score/:title_id", cors(corsOptions), async (req, res) =>{
+  try{
+    const title_id = req.params.title_id;
+    const query = { title_id: title_id };
+
+    const db = client.db(process.env.MONGODB_DBNAME);
+
+    const queryResult = await db.collection('ktv-original-data').findOne(query);
+
+    const parsedData = JSON.parse(queryResult.audio_data);
+    /* FOR POSTMAN LOCAL DATA */
+    // const audioData = req.body.audio_data;
+    
+    const audioData = JSON.parse(req.body.audioData);
+    const finalScore = similarityScore(audioData, parsedData);
+
+    res.status(200).json(finalScore);
   }
   catch(err){
     console.error(err);
