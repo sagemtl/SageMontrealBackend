@@ -9,7 +9,7 @@ const stripe = require("stripe")(process.env.SECRET_KEY);
 const endpointSecret = process.env.ENDPOINT_SECRET_KEY;
 
 const corsOptions = {
-  origin: process.env.ALLOWED_ORIGIN,
+  origin: '*',
   optionsSuccessStatus: 200
 }
 
@@ -67,30 +67,28 @@ router.post("/create_order", cors(corsOptions), async (req, res) => {
     });
 
     await doc.loadInfo(); // loads document properties and worksheets
-    console.log(doc.title);
 
     const today = new Date().toLocaleDateString();
 
-    console.log(orderItems);
-    console.log(shipping);
-    console.log(metadata);
-
     const sheet = doc.sheetsByTitle['Sale Logs'];
-    console.log(sheet.title);
 
     for (var i = 0; i < orderItems.length; i++) {
-      [size, design, item] = orderItems[i].description.split('/');
+      [size, design, color, item] = orderItems[i].description.split('/');
 
-      const newRow = await sheet.addRow({
-        Date: today, 
-        Name: shipping.name,
-        Address: `${shipping.address.line1}, ${shipping.address.city}, ${shipping.address.state}, ${shipping.address.country}, ${shipping.address.postal_code}`,
-        Item: item,
-        Quantity: orderItems[i].quantity,
-        Design: design,
-        Size: size,
-        Shipping: metadata['Shipping Method'],
-      });
+      for (var j = 0; j < orderItems[i].quantity; j++) {
+        const newRow = await sheet.addRow({
+          Date: today, 
+          Name: shipping.name,
+          Address: `${shipping.address.line1}, ${shipping.address.city}, ${shipping.address.state}, ${shipping.address.country}, ${shipping.address.postal_code}`,
+          Inventory: item,
+          Quantity: 1,
+          Design: design,
+          Color: color,
+          Size: size,
+          Shipping: metadata['Shipping Method'],
+          Price: orderItems[i].amount / 100,
+        });
+      }
     }
 
     const emptyRow = await sheet.addRow({ Date: '------------------------' });
@@ -102,43 +100,54 @@ router.post("/create_order", cors(corsOptions), async (req, res) => {
 });
 
  // Callback when the shipping address is updated.
-router.post("/calculateShipping", cors(corsOptions), async (req, res) => {
-  const { shippingAddress } = req.body;
+router.post("/calculate_shipping", cors(corsOptions), async (req, res) => {
+  const { shippingAddress, total, shipByMail } = req.body;
 
   try {
     if (shippingAddress.country === 'CA') {
-      res.status(200).json({ supportedShippingOptions: [
-        {
-          id: 'free-shipping',
+      const options = [];
+      if (shipByMail) {
+        options.push({
+          id: 'mail-shipping',
           label: 'Mail',
-          detail: 'Arrives in 4 to 10 business days',
-          amount: 0,
-        },
-        {
-          id: 'expedited-shipping',
-          label: 'Expedited Parcel',
+          detail: 'Arrives in 5 to 10 business days',
+          amount: 5,
+        });
+      }
+      if (total >= 70) {
+        options.push({
+          id: 'free-shipping',
+          label: 'Tracked Parcel',
           detail: 'Arrives in 2 to 4 business days',
-          amount: 500,
-        },
-      ]});
+          amount: 0,
+        });
+      } else {
+        options.push({
+          id: 'tracked-parcel',
+          label: 'Tracked Parcel',
+          detail: 'Arrives in 2 to 4 business days',
+          amount: 10,
+        });
+      }
+      res.status(200).json({ supportedShippingOptions: options });
     }
     else if (shippingAddress.country === 'US') {
       res.status(200).json({ supportedShippingOptions: [
         {
-          id: 'expedited-shipping-us',
-          label: '"Expedited Parcel',
-          detail: 'Arrives in 5 to 10 business days',
-          amount: 1500,
+          id: 'tracked-parcel-us',
+          label: 'Tracked Parcel',
+          detail: 'Arrives in 7 to 14 business days',
+          amount: 2000,
         },
       ]});
     }
     else {
       res.status(200).json({ supportedShippingOptions: [
         {
-          id: 'small-packet-shipping',
-          label: 'Small Packet - Air',
-          detail: 'Arrives in 6 to 12 business days',
-          amount: 2200,
+          id: 'tracked-parcel-intl',
+          label: 'Tracked Parcel',
+          detail: 'Arrives in 7 to 21 business days',
+          amount: 4000,
         },
       ]});
     }
