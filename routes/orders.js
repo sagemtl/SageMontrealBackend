@@ -2,12 +2,11 @@ const express = require("express");
 const router = express.Router();
 const cors = require("cors");
 const uuid = require("uuid");
+const { GoogleSpreadsheet } = require('google-spreadsheet');
 require("dotenv/config");
 const fs = require('fs');
 const stripe = require("stripe")(process.env.SECRET_KEY);
 const endpointSecret = process.env.ENDPOINT_SECRET_KEY;
-
-
 
 const corsOptions = {
   origin: process.env.ALLOWED_ORIGIN,
@@ -51,7 +50,6 @@ router.post("/payment_intent", cors(corsOptions), async (req, res) => {
 
 router.post("/create_order", cors(corsOptions), async (req, res) => {
   const { receipt_email, shipping, orderItems, metadata} = req.body;
-
   try {
     const order = await stripe.orders.create({
       currency: 'cad',
@@ -61,6 +59,41 @@ router.post("/create_order", cors(corsOptions), async (req, res) => {
       metadata: metadata,
     });
 
+    const doc = new GoogleSpreadsheet('1MUf9i0TeStKA_4wMaieuc8e_msuhhMLQPpTP4cTVo78');
+
+    await doc.useServiceAccountAuth({
+      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/gm, '\n'),
+    });
+
+    await doc.loadInfo(); // loads document properties and worksheets
+    console.log(doc.title);
+
+    const today = new Date().toLocaleDateString();
+
+    console.log(orderItems);
+    console.log(shipping);
+    console.log(metadata);
+
+    const sheet = doc.sheetsByTitle['Sale Logs'];
+    console.log(sheet.title);
+
+    for (var i = 0; i < orderItems.length; i++) {
+      [size, design, item] = orderItems[i].description.split('/');
+
+      const newRow = await sheet.addRow({
+        Date: today, 
+        Name: shipping.name,
+        Address: `${shipping.address.line1}, ${shipping.address.city}, ${shipping.address.state}, ${shipping.address.country}, ${shipping.address.postal_code}`,
+        Item: item,
+        Quantity: orderItems[i].quantity,
+        Design: design,
+        Size: size,
+        Shipping: metadata['Shipping Method'],
+      });
+    }
+
+    const emptyRow = await sheet.addRow({ Date: '------------------------' });
     res.sendStatus(200);
   } catch (err) {
     console.error(err);
