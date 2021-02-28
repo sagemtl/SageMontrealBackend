@@ -111,7 +111,7 @@ router.post("/calculate_shipping", cors(corsOptions), async (req, res) => {
           id: 'mail-shipping',
           label: 'Mail',
           detail: 'Arrives in 5 to 10 business days',
-          amount: 5,
+          amount: 500,
         });
       }
       if (total >= 70) {
@@ -126,7 +126,7 @@ router.post("/calculate_shipping", cors(corsOptions), async (req, res) => {
           id: 'tracked-parcel',
           label: 'Tracked Parcel',
           detail: 'Arrives in 2 to 4 business days',
-          amount: 10,
+          amount: 1000,
         });
       }
       res.status(200).json({ supportedShippingOptions: options });
