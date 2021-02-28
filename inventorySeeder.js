@@ -14,27 +14,99 @@ async function populate() {
     await db.collection('inventory').insertMany([
         {
             item: 'tote',
-            color: 'beige',
+            color: 'brown',
             size: 'OS',
-            qty: 0
+            qty: 28
         },
         {
             item: 'hat',
             color: 'black',
             size: 'OS',
-            qty: 0
+            qty: 18
         },
         {
             item: 'hoodie',
             color: 'charcoal',
             size: 'M',
-            qty: 0
+            qty: 15
         },
         {
             item: 'hoodie',
             color: 'charcoal',
             size: 'L',
+            qty: 6
+        },
+        {
+            item: 'tshirt',
+            color: 'forest',
+            size: 'S',
+            qty: 6
+        },
+        {
+            item: 'tshirt',
+            color: 'forest',
+            size: 'M',
+            qty: 6
+        },
+        {
+            item: 'tshirt',
+            color: 'forest',
+            size: 'L',
+            qty: 5
+        },
+        {
+            item: 'tshirt',
+            color: 'forest',
+            size: 'XL',
             qty: 0
+        },
+        {
+            item: 'tshirt',
+            color: 'white',
+            size: 'S',
+            qty: 11
+        },
+        {
+            item: 'tshirt',
+            color: 'white',
+            size: 'M',
+            qty: 20
+        },
+        {
+            item: 'tshirt',
+            color: 'white',
+            size: 'L',
+            qty: 20
+        },
+        {
+            item: 'tshirt',
+            color: 'white',
+            size: 'XL',
+            qty: 4
+        },
+        {
+            item: 'tshirt',
+            color: 'black',
+            size: 'S',
+            qty: 5
+        },
+        {
+            item: 'tshirt',
+            color: 'black',
+            size: 'M',
+            qty: 14
+        },
+        {
+            item: 'tshirt',
+            color: 'black',
+            size: 'L',
+            qty: 14
+        },
+        {
+            item: 'tshirt',
+            color: 'black',
+            size: 'XL',
+            qty: 5
         },
       ]);
   } finally {
