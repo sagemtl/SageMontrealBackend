@@ -132,14 +132,23 @@ router.post("/calculate_shipping", cors(corsOptions), async (req, res) => {
       res.status(200).json({ supportedShippingOptions: options });
     }
     else if (shippingAddress.country === 'US') {
-      res.status(200).json({ supportedShippingOptions: [
-        {
+      const options = [];
+      if (total >= 90) {
+        options.push({
+          id: 'free-shipping-us',
+          label: 'Tracked Parcel',
+          detail: 'Arrives in 7 to 14 business days',
+          amount: 0,
+        });
+      } else {
+        options.push({
           id: 'tracked-parcel-us',
           label: 'Tracked Parcel',
           detail: 'Arrives in 7 to 14 business days',
-          amount: 2000,
-        },
-      ]});
+          amount: 1500,
+        });
+      }
+      res.status(200).json({ supportedShippingOptions: options });
     }
     else {
       res.status(200).json({ supportedShippingOptions: [
