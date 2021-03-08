@@ -87,6 +87,7 @@ router.post("/create_order", cors(corsOptions), async (req, res) => {
           Size: size,
           Shipping: metadata['Shipping Method'],
           Price: orderItems[i].amount / 100,
+          Email: receipt_email,
         });
       }
     }
