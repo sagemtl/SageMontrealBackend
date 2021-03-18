@@ -147,7 +147,7 @@ router.post("/calculate_shipping", cors(corsOptions), async (req, res) => {
             id: 'tracked-parcel-us',
             label: 'Tracked Parcel',
             detail: 'Arrives in 7 to 14 business days',
-            amount: 1500,
+            amount: 600,
           });
         }
         res.status(200).json({ supportedShippingOptions: options });
@@ -205,7 +205,7 @@ router.post("/calculate_shipping", cors(corsOptions), async (req, res) => {
             id: 'tracked-parcel-us',
             label: 'Tracked Parcel',
             detail: 'Arrives in 7 to 14 business days',
-            amount: 1200,
+            amount: 500,
           });
         }
         res.status(200).json({ supportedShippingOptions: options });
