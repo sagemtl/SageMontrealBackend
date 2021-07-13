@@ -2,20 +2,19 @@ const express = require("express");
 const router = express.Router();
 const cors = require("cors");
 const uuid = require("uuid");
+const { GoogleSpreadsheet } = require('google-spreadsheet');
 require("dotenv/config");
 const fs = require('fs');
 const stripe = require("stripe")(process.env.SECRET_KEY);
 const endpointSecret = process.env.ENDPOINT_SECRET_KEY;
 
-
-
 const corsOptions = {
-  origin: process.env.ALLOWED_ORIGIN,
+  origin: '*',
   optionsSuccessStatus: 200
 }
 
 router.post("/payment_intent", cors(corsOptions), async (req, res) => {
-  const { price, receipt_email, shipping, orderItems} = req.body;
+  const { price, receipt_email, shipping, orderItems, currency} = req.body;
 
   try {
 
@@ -36,7 +35,7 @@ router.post("/payment_intent", cors(corsOptions), async (req, res) => {
 
     const intent = await stripe.paymentIntents.create({
       amount: price,
-      currency: "CAD",
+      currency: currency,
       description: `Purchased Item`,
       receipt_email: receipt_email,
       shipping: shipping
@@ -50,8 +49,7 @@ router.post("/payment_intent", cors(corsOptions), async (req, res) => {
 });
 
 router.post("/create_order", cors(corsOptions), async (req, res) => {
-  const { receipt_email, shipping, orderItems, metadata} = req.body;
-
+  const { receipt_email, shipping, orderItems, metadata, currency} = req.body;
   try {
     const order = await stripe.orders.create({
       currency: 'cad',
@@ -61,6 +59,41 @@ router.post("/create_order", cors(corsOptions), async (req, res) => {
       metadata: metadata,
     });
 
+    const doc = new GoogleSpreadsheet('1MUf9i0TeStKA_4wMaieuc8e_msuhhMLQPpTP4cTVo78');
+
+    await doc.useServiceAccountAuth({
+      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/gm, '\n'),
+    });
+
+    await doc.loadInfo(); // loads document properties and worksheets
+
+    const today = new Date().toLocaleDateString();
+
+    const sheet = doc.sheetsByTitle['Sale Logs'];
+
+    for (var i = 0; i < orderItems.length; i++) {
+      [size, design, color, item] = orderItems[i].description.split('/');
+
+      for (var j = 0; j < orderItems[i].quantity; j++) {
+        const newRow = await sheet.addRow({
+          Date: today, 
+          Name: shipping.name,
+          Address: `${shipping.address.line1}, ${shipping.address.city}, ${shipping.address.state}, ${shipping.address.country}, ${shipping.address.postal_code}`,
+          Inventory: item,
+          Quantity: 1,
+          Design: design,
+          Color: color,
+          Size: size,
+          Shipping: metadata['Shipping Method'],
+          Price: `${orderItems[i].amount / 100}`,
+          Email: receipt_email,
+          Currency: `${currency}`,
+        });
+      }
+    }
+
+    const emptyRow = await sheet.addRow({ Date: '------------------------' });
     res.sendStatus(200);
   } catch (err) {
     console.error(err);
@@ -69,45 +102,125 @@ router.post("/create_order", cors(corsOptions), async (req, res) => {
 });
 
  // Callback when the shipping address is updated.
-router.post("/calculateShipping", cors(corsOptions), async (req, res) => {
-  const { shippingAddress } = req.body;
-
+router.post("/calculate_shipping", cors(corsOptions), async (req, res) => {
+  const { shippingAddress, total, shipByMail, currency } = req.body;
   try {
-    if (shippingAddress.country === 'CA') {
-      res.status(200).json({ supportedShippingOptions: [
-        {
-          id: 'free-shipping',
-          label: 'Mail',
-          detail: 'Arrives in 4 to 10 business days',
-          amount: 0,
-        },
-        {
-          id: 'expedited-shipping',
-          label: 'Expedited Parcel',
-          detail: 'Arrives in 2 to 4 business days',
-          amount: 500,
-        },
-      ]});
-    }
-    else if (shippingAddress.country === 'US') {
-      res.status(200).json({ supportedShippingOptions: [
-        {
-          id: 'expedited-shipping-us',
-          label: '"Expedited Parcel',
-          detail: 'Arrives in 5 to 10 business days',
-          amount: 1500,
-        },
-      ]});
-    }
-    else {
-      res.status(200).json({ supportedShippingOptions: [
-        {
-          id: 'small-packet-shipping',
-          label: 'Small Packet - Air',
-          detail: 'Arrives in 6 to 12 business days',
-          amount: 2200,
-        },
-      ]});
+    if (currency === 'CAD') {
+      if (shippingAddress.country === 'CA') {
+        const options = [];
+        if (shipByMail) {
+          options.push({
+            id: 'mail-shipping',
+            label: 'Mail',
+            detail: 'Arrives in 5 to 10 business days',
+            amount: 500,
+          });
+        }
+        if (total >= 70) {
+          options.push({
+            id: 'free-shipping',
+            label: 'Tracked Parcel',
+            detail: 'Arrives in 2 to 4 business days',
+            amount: 0,
+          });
+        } else {
+          options.push({
+            id: 'tracked-parcel',
+            label: 'Tracked Parcel',
+            detail: 'Arrives in 2 to 4 business days',
+            amount: 1000,
+          });
+        }
+        res.status(200).json({ supportedShippingOptions: options });
+      }
+      else if (shippingAddress.country === 'US') {
+        const options = [];
+        if (total >= 90) {
+          options.push({
+            id: 'free-shipping-us',
+            label: 'Tracked Parcel',
+            detail: 'Arrives in 7 to 14 business days',
+            amount: 0,
+          });
+        } else {
+          options.push({
+            id: 'tracked-parcel-us',
+            label: 'Tracked Parcel',
+            detail: 'Arrives in 7 to 14 business days',
+            amount: 600,
+          });
+        }
+        res.status(200).json({ supportedShippingOptions: options });
+      }
+      else {
+        res.status(200).json({ supportedShippingOptions: [
+          {
+            id: 'tracked-parcel-intl',
+            label: 'Tracked Parcel',
+            detail: 'Arrives in 7 to 21 business days',
+            amount: 4000,
+          },
+        ]});
+      }
+    // US SHIPPING
+    } else {
+      if (shippingAddress.country === 'CA') {
+        const options = [];
+        if (shipByMail) {
+          options.push({
+            id: 'mail-shipping',
+            label: 'Mail',
+            detail: 'Arrives in 5 to 10 business days',
+            amount: 400,
+          });
+        }
+        if (total >= 55) {
+          options.push({
+            id: 'free-shipping',
+            label: 'Tracked Parcel',
+            detail: 'Arrives in 2 to 4 business days',
+            amount: 0,
+          });
+        } else {
+          options.push({
+            id: 'tracked-parcel',
+            label: 'Tracked Parcel',
+            detail: 'Arrives in 2 to 4 business days',
+            amount: 800,
+          });
+        }
+        res.status(200).json({ supportedShippingOptions: options });
+      }
+      else if (shippingAddress.country === 'US') {
+        const options = [];
+        if (total >= 75) {
+          options.push({
+            id: 'free-shipping-us',
+            label: 'Tracked Parcel',
+            detail: 'Arrives in 7 to 14 business days',
+            amount: 0,
+          });
+        } else {
+          options.push({
+            id: 'tracked-parcel-us',
+            label: 'Tracked Parcel',
+            detail: 'Arrives in 7 to 14 business days',
+            amount: 500,
+          });
+        }
+        res.status(200).json({ supportedShippingOptions: options });
+      }
+      else {
+        res.status(200).json({ supportedShippingOptions: [
+          {
+            id: 'tracked-parcel-intl',
+            label: 'Tracked Parcel',
+            detail: 'Arrives in 7 to 21 business days',
+            amount: 3200,
+          },
+        ]});
+      }
+
     }
   } catch (err) {
     console.error(err);

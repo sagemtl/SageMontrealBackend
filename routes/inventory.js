@@ -123,8 +123,7 @@ router.post("/inventory/:sku_info", cors(corsOptions), async (req, res) =>{
     var qty = queryResult.qty;
 
     const queryResult2 = await db.collection('inventory').findOneAndUpdate(query, { $inc : { "qty" : -req.body.quantity } });
-
-    res.status(200);
+    res.status(200).json({});
   }
   catch(err){
     console.error(err);
