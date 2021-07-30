@@ -15,9 +15,10 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 client.connect();
 
 const corsOptions = {
-  origin: process.env.ALLOWED_ORIGIN,
+  origin: '*',
   optionsSuccessStatus: 200
 }
+
 
 router.get("/product", cors(corsOptions), async (req, res) => {
   try {

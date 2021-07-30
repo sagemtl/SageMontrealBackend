@@ -11,7 +11,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 client.connect();
 
 const corsOptions = {
-  origin: process.env.ALLOWED_ORIGIN,
+  origin: '*',
   optionsSuccessStatus: 200
 }
 

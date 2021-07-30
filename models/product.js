@@ -2,9 +2,8 @@ import Model from './model';
 import { pool } from './pool';
 
 class Product extends Model {
-  constructor(table) {
+  constructor() {
     this.pool = pool;
-    this.table = table;
     this.pool.on('error', (err, client) => `Error, ${err}, on idle client${client}`);
   }
 
