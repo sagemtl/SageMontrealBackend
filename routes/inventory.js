@@ -5,7 +5,7 @@ const uuid = require("uuid");
 const MongoClient = require('mongodb').MongoClient;
 require("dotenv/config");
 const fs = require('fs');
-const Product = require("../models/product")
+import Product from "../models/product";
 
 const stripe = require("stripe")(process.env.SECRET_KEY);
 
@@ -23,8 +23,8 @@ const corsOptions = {
 router.get("/product", cors(corsOptions), async (req, res) => {
   try {
     const product = new Product();
-    results = product.getProducts();
-    res.status(200).json(results);
+    const results = await product.getProducts();
+    res.status(200).json(results.rows);
   }
   catch(err){
     console.log(err);
