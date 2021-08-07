@@ -1,12 +1,13 @@
-const express = require("express");
-const router = express.Router();
-const cors = require("cors");
-const uuid = require("uuid");
-const { GoogleSpreadsheet } = require('google-spreadsheet');
-require("dotenv/config");
-const fs = require('fs');
+import express from "express";
+import cors from "cors";
+import fs from 'fs';
+import { GoogleSpreadsheet } from 'google-spreadsheet';
+
 const stripe = require("stripe")(process.env.SECRET_KEY);
 const endpointSecret = process.env.ENDPOINT_SECRET_KEY;
+
+require("dotenv/config");
+const router = express.Router();
 
 const corsOptions = {
   origin: '*',
@@ -263,4 +264,4 @@ router.post('/webhook', cors(corsOptions), function(request, response) {
 });
 
 
-module.exports = router;
+export default router;

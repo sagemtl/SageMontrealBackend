@@ -2,10 +2,16 @@
   "name": "sage-montreal-backend",
   "version": "1.0.0",
   "author": "sagemtl",
-  "main": "index.js",
+  "main": "build/index.js",
   "scripts": {
-    "server": "nodemon server",
-    "start": "node -r esm ./server.js"
+    "build": "tsc",
+    "clean": "rm -rf build && rm -f *.tsbuildinfo",
+    "build:clean": "npm run clean && npm run build",
+    "start": "npm run build:clean && node ./build/server.js",
+    "start:watch": "nodemon --delay 0.5",
+    "start:dev": "ts-node-dev --poll src/server.ts",
+    "eslint": "eslint ./src --ext .js,.ts",
+    "eslint:fix": "npm run eslint -- --fix"
   },
   "dependencies": {
     "concurrently": "^5.1.0",
@@ -15,12 +21,29 @@
     "express": "^4.17.1",
     "google-spreadsheet": "^3.1.15",
     "mongodb": "^3.6.0",
+    "http-status-codes": "^2.1.4",
     "nodemailer": "^6.6.2",
     "pg": "^8.6.0",
-    "stripe": "^8.38.0",
-    "uuid": "^7.0.2"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.2"
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/node": "^16.4.13",
+    "@types/nodemailer": "^6.4.4",
+    "@types/pg-pool": "^2.0.3",
+    "@types/stripe": "^8.0.417",
+    "@typescript-eslint/eslint-plugin": "^4.29.0",
+    "@typescript-eslint/parser": "^4.29.0",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-prettier": "^3.4.0",
+    "nodemon": "^2.0.2",
+    "prettier": "^2.3.2",
+    "stripe": "^8.168.0",
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.3.5"
   }
 }
