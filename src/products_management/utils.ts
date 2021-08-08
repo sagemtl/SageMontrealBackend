@@ -1,4 +1,4 @@
-import { ProductImage } from "../models/productsManagement/productImage/entities";
+import { ProductImage } from "../db/models/product_image";
 
 export const processProductImages = (productImages: string[]): ProductImage[] => {
   return productImages.map((image: string, index: number) => {

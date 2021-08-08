@@ -1,26 +1,16 @@
 import express from "express";
 import Stripe from "stripe";
-
-import { processProductImages } from "../helpers/productsUtils";
-
-import ProductDAO from "../models/productsManagement/product";
-import ProductImageDAO from "../models/productsManagement/productImage";
-import PriceDAO from "../models/productsManagement/price";
-import SkuDAO from "../models/productsManagement/sku";
-
 import "dotenv/config";
+
+import ProductManagementService from "../products_management";
 
 const router = express.Router();
 const stripe = new Stripe(process.env.SECRET_KEY!, { apiVersion: '2020-08-27' });
-const productDAO = new ProductDAO();
-const productImageDAO = new ProductImageDAO();
-const priceDao = new PriceDAO();
-const skuDao = new SkuDAO();
 
 
 router.get("/", async (req, res) => {
   try {
-    const results = await productDAO.getProducts();
+    const results = await ProductManagementService.getProducts();
     res.status(200).json(results);
   }
   catch(err){
@@ -38,16 +28,7 @@ router.post("/", async (req, res) => {
     const skus = req.body.skus;
     // TODO: Validate product, productImages, prices, skus
 
-    const productId = await productDAO.createProduct(product);
-
-    console.log(productId);
-
-    const productImagesWithPriority = processProductImages(productImages);
-    await productImageDAO.createProductImages(productId, productImagesWithPriority);
-
-    await priceDao.createPrices(productId, prices);
-    await skuDao.createSkus(productId, skus);
-
+    const productId = await ProductManagementService.createFullProduct(product, skus, productImages, prices);
     res.status(200).json({ message: "Product created successfully.", productId });
   }
   catch(err){
