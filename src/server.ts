@@ -29,10 +29,10 @@ app.use(express.json({limit: "5mb"}));
 app.use(cors(options));
 
 // Routes Middleware
-app.use('/products-api', products_routes);
-app.use('/orders-api', orders_routes);
-app.use('/ktv-api', ktv_routes);
-app.use('/ktv-api', mailer_routes);
+app.use('/products', products_routes);
+app.use('/orders', orders_routes);
+app.use('/ktv', ktv_routes);
+app.use('/mailer', mailer_routes);
 
 // PORT, Listen
 const port = process.env.PORT || 5000;
