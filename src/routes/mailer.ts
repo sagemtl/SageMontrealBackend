@@ -1,25 +1,7 @@
-const express = require('express');
-const app = express();
-const cors = require('cors');
-require("dotenv/config");
-const nodemailer = require('nodemailer');
+import express from "express";
+import nodemailer from 'nodemailer';
 
-
-
-// Import Routes
-const inventory_routes = require('./routes/inventory');
-const orders_routes = require('./routes/orders');
-const ktv_routes = require('./routes/ktv');
-
-// Middlewares
-app.use(express.json({limit: "5mb"}));
-app.use(cors());
-
-// Routes Middleware
-app.use('/inventory-api', inventory_routes);
-app.use('/orders-api', orders_routes);
-app.use('/ktv-api', ktv_routes);
-
+const router = express.Router();
 
 // Contact endpoint
 let transporter = nodemailer.createTransport({
@@ -32,7 +14,7 @@ let transporter = nodemailer.createTransport({
   }
 });
 
-app.post("/contact", (req, res) => {
+router.post("/contact", (req, res) => {
   const { name, email, subject, message } = req.body;
   var content = `name: ${name} \n email: ${email} \n subject: ${subject} \n message: ${message}`;
 
@@ -52,6 +34,4 @@ app.post("/contact", (req, res) => {
   })
 })
 
-// PORT, Listen
-const port = process.env.PORT || 5000;
-app.listen(port, () => console.log(`App running on PORT ${port}`));
+export default router;
