@@ -12,6 +12,17 @@ class ProductManagementDAO extends DAO {
     return results.rows;
   }
 
+  async getProductsFeatured(): Promise<Product[]> {
+    const results = await this.query("SELECT product_images.link, products.product_name FROM product_images inner JOIN products ON product_images.product_id = id WHERE featured = TRUE");
+    return results.rows;
+  }
+
+  async getInventoryBySku(sku: Sku): Promise<number> {
+    const results = await this.query(
+      `SELECT skus.inventory FROM skus WHERE id = '${sku}';`);
+    return results.rows[0];
+  }
+
   async createProduct(product: Product): Promise<string> {
     const query = `INSERT INTO ${this.productsTable} (path, product_type, product_name, description, color, model_info, active, featured)
       values ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id;`;

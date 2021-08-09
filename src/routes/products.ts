@@ -19,6 +19,30 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/productsFeatured", async (req, res) => {
+  try {
+    const results = await ProductManagementService.getProductsFeatured();
+    res.status(200).json(results);
+  }
+  catch(err){
+    console.log(err);
+    res.status(500).send(err);
+  }
+});
+
+router.get("/inventory/sku/:sku", async (req, res) => {
+  try {
+    let sku: any;
+    sku = req.params.sku;
+    const results = await ProductManagementService.getInventoryBySku(sku);
+    res.status(200).json(results);
+  }
+  catch(err){
+    console.log(err);
+    res.status(500).send(err);
+  }
+});
+
 router.post("/", async (req, res) => {
   try {
     

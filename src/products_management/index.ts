@@ -10,6 +10,15 @@ class ProductManagementService {
     return productManagementDAO.getProducts();
   }
 
+  static async getProductsFeatured(): Promise<Product[]> {
+    return productManagementDAO.getProductsFeatured();
+  }
+
+  static async getInventoryBySku(skus: Sku): Promise<number> {
+    console.log(skus)
+    return productManagementDAO.getInventoryBySku(skus);
+  }
+
   static async createFullProduct(product: Product, skus: Sku[], productImages: string[], prices: Price[]): Promise<string> {
     const productImagesWithPriority = processProductImages(productImages);
     const productId = await productManagementDAO.createProduct(product);
