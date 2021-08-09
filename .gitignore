@@ -6,6 +6,8 @@ public/
 .env.development
 public/
 .vscode/
+build/
+tsconfig.tsbuildinfo
 
 # Ignore DS_Store
 .DS_Store
