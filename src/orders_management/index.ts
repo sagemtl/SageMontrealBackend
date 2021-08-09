@@ -1,14 +1,15 @@
 import { Order, OrderItem } from '../db';
 import { OrderState } from '../db/models/order';
 import OrderManagementDAO from "./dao";
-import { OrderInfo, OrderItemInfo, OrderDetails } from './utils';
+import { OrderInfo, Orders, OrderDetails, sortOrders } from './utils';
 
 const orderManagementDAO = new OrderManagementDAO();
 
 class OrderManagementService {
 
-  static async getOrders(): Promise<Order[]> {
-    return orderManagementDAO.getOrders();
+  static async getOrders(): Promise<Orders> {
+    const orders = await orderManagementDAO.getOrders();
+    return sortOrders(orders);
   }
 
   static async getOrderDetailsById(orderId: string): Promise<OrderDetails> {
