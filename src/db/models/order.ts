@@ -1,4 +1,4 @@
-enum OrderState {
+export enum OrderState {
   New = 'new',
   Processed = 'processed',
   Shipped = 'shipped',

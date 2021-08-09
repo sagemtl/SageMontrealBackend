@@ -45,6 +45,31 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.patch("/:orderId/status", async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const orderState = req.body.order_state;
+    await OrderManagementService.updateOrderState(orderId, orderState);
+    res.status(200).json({ message: "Order state updated successfully.", orderId, orderState});
+  }
+  catch(err){
+    console.log(err);
+    res.status(500).send(err);
+  }
+});
+
+router.patch("/:orderId/tracking", async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const trackingNumber = req.body.tracking_number;
+    await OrderManagementService.updateTrackingNumber(orderId, trackingNumber);
+    res.status(200).json({ message: "Order state updated successfully.", orderId, trackingNumber});
+  }
+  catch(err){
+    console.log(err);
+    res.status(500).send(err);
+  }
+});
 
 // Old endpoints
 

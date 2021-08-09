@@ -1,4 +1,5 @@
 import DAO, { Order, OrderItem } from '../db';
+import { OrderState } from '../db/models/order';
 import { OrderInfo, OrderItemInfo } from './utils';
 
 class OrderManagementDAO extends DAO {
@@ -58,6 +59,18 @@ class OrderManagementDAO extends DAO {
     const orderItemsValues = orderItems.map(orderItem => `('${orderItem.sku_id}', '${orderId}', ${orderItem.quantity}, ${orderItem.adjusted_price ?? null})`);
     const query = `INSERT INTO ${this.orderItemsTable} (sku_id, order_id, quantity, adjusted_price) values ${orderItemsValues.join(', ')};`;
     await this.query(query);
+  }
+
+  async updateOrderState(orderId: string, orderState: OrderState): Promise<void> {
+    const query = `UPDATE ${this.ordersTable} SET order_state = $1 WHERE id = $2;`;
+    const values = [orderState, orderId];
+    await this.query(query, values);
+  }
+
+  async updateTrackingNumber(orderId: string, trackingNumber: string): Promise<void> {
+    const query = `UPDATE ${this.ordersTable} SET tracking_number = $1 WHERE id = $2;`;
+    const values = [trackingNumber, orderId];
+    await this.query(query, values);
   }
 }
 
