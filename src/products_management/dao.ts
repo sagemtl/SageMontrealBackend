@@ -8,7 +8,14 @@ class ProductManagementDAO extends DAO {
   readonly productImagesTable: string = 'product_images';
 
   async getProducts(): Promise<Product[]> {
-    const results = await this.query(`SELECT * FROM ${this.productsTable}`);
+    const query = `SELECT p.*, pi2.link, 
+      (SELECT p1.value FROM ${this.pricesTable} p1 WHERE p1.product_id = p.id AND p1.currency = 'USD') AS usd,
+      (SELECT p1.value FROM ${this.pricesTable} p1 WHERE p1.product_id = p.id AND p1.currency = 'CAD') AS cad
+      from ${this.productsTable} p
+      inner join ${this.productImagesTable} pi2 on pi2.product_id = p.id
+      where pi2.priority = 1;`;
+
+    const results = await this.query(query);
     return results.rows;
   }
 
