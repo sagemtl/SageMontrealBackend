@@ -1,14 +1,20 @@
 import { Pool } from 'pg';
-import { Product } from './models/product';
+import { Customer } from './models/customer';
+import { OrderItem } from './models/order_item';
+import { Order } from './models/order';
 import { Price } from './models/price';
 import { ProductImage } from './models/product_image';
+import { Product } from './models/product';
 import { Sku } from './models/sku';
 
 export {
-  Product,
+  Customer,
+  OrderItem,
+  Order,
   Price,
   ProductImage,
-  Sku
+  Product,
+  Sku,
 };
 
 const pool = new Pool({

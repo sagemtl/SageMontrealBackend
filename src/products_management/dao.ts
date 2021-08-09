@@ -37,11 +37,10 @@ class ProductManagementDAO extends DAO {
     const productImagesValues = productImages.map(productImage => `('${productId}', ${productImage.priority}, '${productImage.link}')`);
     const pricesValues = prices.map(price => `('${productId}', '${price.currency}', ${price.value})`);
 
-    let query = `INSERT INTO ${this.skusTable}  (product_id, sku_size, inventory) values ${skusValues.join(', ')};\n`;
+    let query = `INSERT INTO ${this.skusTable} (product_id, sku_size, inventory) values ${skusValues.join(', ')};\n`;
     query += `INSERT INTO ${this.productImagesTable} (product_id, priority, link) values ${productImagesValues.join(', ')};\n`;
     query += `INSERT INTO ${this.pricesTable} (product_id, currency, value) values ${pricesValues.join(', ')};`;
 
-    console.log(query);
     await this.query(query);
   }
 }
