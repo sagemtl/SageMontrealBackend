@@ -14,6 +14,7 @@
     "eslint:fix": "npm run eslint -- --fix"
   },
   "dependencies": {
+    "body-parser": "^1.19.0",
     "concurrently": "^5.1.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",

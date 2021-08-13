@@ -61,7 +61,20 @@ router.post("/", async (req, res) => {
   }
 });
 
-
+router.patch('/inventory/:sku', async (req, res) => {
+  try {
+    let sku: any = req.params.sku;
+    let quantity: any = req.body.quantity;
+    const results = await ProductManagementService.updateProductInventory(
+      sku,
+      quantity
+    );
+    res.status(200).json({ message: 'Product ', sku });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+});
 
 
 // OLD ENDPOINTS

@@ -25,6 +25,13 @@ class ProductManagementService {
     await  productManagementDAO.createProductDetails(productId, skus, productImagesWithPriority, prices);
     return productId;
   }
+
+  static async updateProductInventory(
+    sku: Sku,
+    quantity: number
+  ): Promise<String> {
+    return productManagementDAO.updateProductInventory(sku, quantity);
+  }
 }
 
 export default ProductManagementService;
