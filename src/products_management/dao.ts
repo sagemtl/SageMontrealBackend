@@ -1,7 +1,6 @@
 import DAO, { Product, Price, ProductImage, Sku } from '../db';
 
 class ProductManagementDAO extends DAO {
-  
   readonly productsTable: string = 'products';
   readonly pricesTable: string = 'prices';
   readonly skusTable: string = 'skus';
@@ -73,6 +72,30 @@ class ProductManagementDAO extends DAO {
     } (product_id, currency, value) values ${pricesValues.join(', ')};`;
 
     await this.query(query);
+  }
+
+  async updateProductInfo(
+    id: string,
+    product_type: string,
+    product_name: string,
+    description: string,
+    color: string,
+    model_info: string,
+    active: boolean,
+    featured: boolean
+  ): Promise<String> {
+    const results = await this.query(
+      `UPDATE products 
+      set product_type = COALESCE('${product_type}', product_type),
+        product_name = COALESCE('${product_name}', product_name),
+        description = COALESCE('${description}', description),
+        color = COALESCE('${color}', color),
+        model_info = COALESCE('${model_info}', model_info),
+        active = COALESCE('${active}', active),
+        featured = COALESCE('${featured}', featured)
+      where id = '${id}'`
+    );
+    return results.rows[0];
   }
 
   async updateProductInventory(sku: Sku, quantity: number): Promise<String> {
