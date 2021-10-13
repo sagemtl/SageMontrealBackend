@@ -6,13 +6,13 @@ import { Price } from './models/price';
 import { ProductImage } from './models/product_image';
 import { Product } from './models/product';
 import { Sku } from './models/sku';
-import { Post } from './models/post';
+import { PostIt } from './models/post_it';
 
 export {
   Customer,
   OrderItem,
   Order,
-  Post,
+  PostIt,
   Price,
   ProductImage,
   Product,

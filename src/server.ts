@@ -6,7 +6,7 @@ import products_routes from './routes/products';
 import orders_routes from './routes/orders';
 import ktv_routes from './routes/ktv';
 import mailer_routes from './routes/mailer';
-import post_its_routes from './routes/posts'
+import post_its_routes from './routes/postIts'
 
 const app = express();
 import "dotenv/config";
