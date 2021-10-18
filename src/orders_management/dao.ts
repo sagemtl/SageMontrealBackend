@@ -34,9 +34,13 @@ class OrderManagementDAO extends DAO {
   }
 
   async getOrInsertCustomer(orderInfo: OrderInfo): Promise<string> {
-    const query = `INSERT INTO ${this.customersTable} (first_name, last_name, email, billing_postal_code) 
-      values ($1, $2, $3, $4) ON CONFLICT (first_name, last_name, email, billing_postal_code) DO UPDATE SET id=EXCLUDED.id RETURNING id;`;
-    const values = [orderInfo.first_name, orderInfo.last_name, orderInfo.email, orderInfo.billing_postal_code];
+    const query = `WITH ins AS (
+      INSERT INTO ${this.customersTable} (full_name, email, billing_postal_code) 
+      values($1, $2, $3) ON CONFLICT (full_name, email, billing_postal_code) DO NOTHING RETURNING id
+      )
+      SELECT id FROM ins UNION ALL SELECT id FROM ${this.customersTable} WHERE full_name = $1 AND email = $2
+      AND billing_postal_code = $3 LIMIT 1;`;
+    const values = [orderInfo.full_name, orderInfo.email, orderInfo.billing_postal_code];
 
     const results = await this.query(query, values);
     return results.rows[0].id;
