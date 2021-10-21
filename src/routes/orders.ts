@@ -108,6 +108,61 @@ router.post("/payment_intent", async (req, res) => {
   }
 });
 
+router.post("/create_order", async (req, res) => {
+  const { receipt_email, shipping, orderItems, metadata, currency} = req.body;
+  try {
+    const order = await stripe.orders.create({
+      currency: 'cad',
+      email: receipt_email,
+      items: orderItems,
+      shipping: shipping,
+      metadata: metadata,
+    });
+
+    /*
+    const doc = new GoogleSpreadsheet('1MUf9i0TeStKA_4wMaieuc8e_msuhhMLQPpTP4cTVo78');
+
+    await doc.useServiceAccountAuth({
+      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/gm, '\n'),
+    });
+
+    await doc.loadInfo(); // loads document properties and worksheets
+
+    const today = new Date().toLocaleDateString();
+
+    const sheet = doc.sheetsByTitle['Sale Logs'];
+
+    for (var i = 0; i < orderItems.length; i++) {
+      [size, design, color, item] = orderItems[i].description.split('/');
+
+      for (var j = 0; j < orderItems[i].quantity; j++) {
+        const newRow = await sheet.addRow({
+          Date: today, 
+          Name: shipping.name,
+          Address: `${shipping.address.line1}, ${shipping.address.city}, ${shipping.address.state}, ${shipping.address.country}, ${shipping.address.postal_code}`,
+          Inventory: item,
+          Quantity: 1,
+          Design: design,
+          Color: color,
+          Size: size,
+          Shipping: metadata['Shipping Method'],
+          Price: `${orderItems[i].amount / 100}`,
+          Email: receipt_email,
+          Currency: `${currency}`,
+        });
+      }
+    }
+
+    const emptyRow = await sheet.addRow({ Date: '------------------------' });
+    */
+    res.sendStatus(200);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  }
+});
+
  // Callback when the shipping address is updated.
 router.post("/calculate_shipping", async (req, res) => {
   const { shippingAddress, total, shipByMail, currency } = req.body;
