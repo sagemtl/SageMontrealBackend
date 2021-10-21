@@ -19,6 +19,21 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/:productId", async (req, res) => {
+  try {
+    
+    const productId = req.params.productId;
+    // TODO: Validate productId
+
+    const product = await ProductManagementService.getProductById(productId);
+    res.status(200).json({ product });
+  }
+  catch(err){
+    console.log(err);
+    res.status(500).send(err);
+  }
+});
+
 router.post("/", async (req, res) => {
   try {
     

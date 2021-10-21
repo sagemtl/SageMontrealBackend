@@ -1,4 +1,5 @@
 import DAO, { Product, Price, ProductImage, Sku } from '../db';
+import { ProductPageInfo, processProductPageInfo } from "./utils";
 
 class ProductManagementDAO extends DAO {
 
@@ -8,15 +9,29 @@ class ProductManagementDAO extends DAO {
   readonly productImagesTable: string = 'product_images';
 
   async getProducts(): Promise<Product[]> {
-    const query = `SELECT p.*, pi2.link, 
-      (SELECT p1.value FROM ${this.pricesTable} p1 WHERE p1.product_id = p.id AND p1.currency = 'USD') AS usd,
-      (SELECT p1.value FROM ${this.pricesTable} p1 WHERE p1.product_id = p.id AND p1.currency = 'CAD') AS cad
+    const query = `SELECT p.*, pi.link, 
+      (SELECT pr.value FROM ${this.pricesTable} pr WHERE pr.product_id = p.id AND pr.currency = 'USD') AS usd,
+      (SELECT pr.value FROM ${this.pricesTable} pr WHERE pr.product_id = p.id AND pr.currency = 'CAD') AS cad
       from ${this.productsTable} p
-      inner join ${this.productImagesTable} pi2 on pi2.product_id = p.id
-      where pi2.priority = 1;`;
+      inner join ${this.productImagesTable} pi on pi.product_id = p.id
+      where pi.priority = 1;`;
 
     const results = await this.query(query);
     return results.rows;
+  }
+
+  async getProductById(productId: string): Promise<ProductPageInfo> {
+
+    const query = `SELECT p.*, pi.link, s.*, 
+      (SELECT pr.value FROM ${this.pricesTable} pr WHERE pr.product_id = p.id AND pr.currency = 'USD') AS usd,
+      (SELECT pr.value FROM ${this.pricesTable} pr WHERE pr.product_id = p.id AND pr.currency = 'CAD') AS cad
+      from ${this.productsTable} p 
+      inner join ${this.productImagesTable} pi on pi.product_id = p.id
+      inner join ${this.skusTable} s on s.product_id = p.id
+      where p.id = '${productId}';`;
+
+    const results = await this.query(query);
+    return processProductPageInfo(results.rows);
   }
 
   async createProduct(product: Product): Promise<string> {

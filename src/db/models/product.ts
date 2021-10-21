@@ -9,6 +9,6 @@ export class Product {
     public active: boolean,
     public featured: boolean,
     public readonly id?: string,
-    public readonly created_date?: string,
+    public readonly create_date?: string,
   ) { }
 }
