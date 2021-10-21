@@ -5,7 +5,7 @@ class PostItManagementDAO extends DAO {
   readonly postItTable: string = 'post_its';
 
   async getPostIts(): Promise<PostIt[]> {
-    const query = `SELECT * FROM ${this.postItTable} ORDER BY z_index DESC;`;
+    const query = `SELECT * FROM ${this.postItTable} ORDER BY create_date DESC LIMIT 50;`;
     const results = await this.query(query);
     return results.rows.map(PostIt.toDomainObject);
   }
