@@ -31,7 +31,7 @@ app.use(cors(options));
 
 // Routes Middleware
 app.use('/products', products_routes);
-app.use('/orders-api', orders_routes);
+app.use('/orders', orders_routes);
 app.use('/ktv', ktv_routes);
 app.use('/mailer', mailer_routes);
 app.use('/post-it', post_its_routes);
