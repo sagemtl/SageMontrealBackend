@@ -27,7 +27,7 @@ const options: CorsOptions = {
 console.log(process.env.NODE_ENV === 'production');
 // Middlewares
 app.use(express.json({limit: "5mb"}));
-app.use(cors(options));
+app.use(cors());
 
 // Routes Middleware
 app.use('/products', products_routes);
