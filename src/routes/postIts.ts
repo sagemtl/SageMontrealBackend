@@ -1,12 +1,9 @@
 import express from "express";
-import Stripe from "stripe";
 import "dotenv/config";
 
 import PostItManagementService from "../post_its_management";
 
 const router = express.Router();
-const stripe = new Stripe(process.env.SECRET_KEY!, { apiVersion: '2020-08-27' });
-
 
 router.get("/", async (req, res) => {
   try {
@@ -33,5 +30,7 @@ router.post("/", async (req, res) => {
     res.status(500).send(err);
   }
 });
+
+router.options("/"); 
 
 export default router;

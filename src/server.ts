@@ -12,22 +12,14 @@ const app = express();
 import "dotenv/config";
 
 const options: CorsOptions = {
-  allowedHeaders: [
-    'Origin',
-    'X-Requested-With',
-    'Content-Type',
-    'Accept',
-    'X-Access-Token',
-  ],
-  credentials: true,
-  methods: 'GET, POST, OPTIONS, PUT, PATCH, DELETE',
-  origin: process.env.NODE_ENV === 'production' ? ['https://www.sagemontreal.com', 'https://ktv.sagemontreal.com', 'https://samcha.sagemontreal.com'] : '*',
-  preflightContinue: false,
+  methods: 'GET,POST,OPTIONS,PUT,PATCH,DELETE',
+  origin: process.env.NODE_ENV === 'production' ? /\.sagemontreal\.com$/: '*',
+  optionsSuccessStatus: 200,
 };
-console.log(process.env.NODE_ENV === 'production');
+
 // Middlewares
 app.use(express.json({limit: "5mb"}));
-app.use(cors());
+app.use(cors(options));
 
 // Routes Middleware
 app.use('/products', products_routes);
