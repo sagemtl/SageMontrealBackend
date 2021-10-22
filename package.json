@@ -10,6 +10,7 @@
     "clean": "rm -rf build && rm -f *.tsbuildinfo",
     "build:clean": "npm run clean && npm run build",
     "start": "node ./build/server.js",
+    "start:prod": "NODE_ENV=production node ./build/server.js",
     "dev": "npm run build:clean && node ./build/server.js",
     "start:watch": "nodemon --delay 0.5",
     "start:dev": "ts-node-dev --poll src/server.ts",

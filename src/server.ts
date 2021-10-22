@@ -21,10 +21,10 @@ const options: CorsOptions = {
   ],
   credentials: true,
   methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH'],
-  origin: ['https://www.sagemontreal.com', 'https://ktv.sagemontreal.com', 'https://samcha.sagemontreal.com'],
+  origin: process.env.NODE_ENV === 'production' ? ['https://www.sagemontreal.com', 'https://ktv.sagemontreal.com', 'https://samcha.sagemontreal.com'] : '*',
   preflightContinue: false,
 };
-
+console.log(process.env.NODE_ENV === 'production');
 // Middlewares
 app.use(express.json({limit: "5mb"}));
 app.use(cors(options));
