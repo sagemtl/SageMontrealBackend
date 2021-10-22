@@ -12,9 +12,12 @@ const app = express();
 import "dotenv/config";
 
 const options: CorsOptions = {
+  allowedHeaders: ['Content-Type'],
   methods: 'GET,POST,OPTIONS,PUT,PATCH,DELETE',
   origin: process.env.NODE_ENV === 'production' ? /\.sagemontreal\.com$/: '*',
   optionsSuccessStatus: 200,
+  credentials: true,
+  maxAge: 360,
 };
 
 // Middlewares
