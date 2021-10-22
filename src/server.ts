@@ -20,7 +20,7 @@ const options: CorsOptions = {
     'X-Access-Token',
   ],
   credentials: true,
-  methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH'],
+  methods: 'GET, POST, OPTIONS, PUT, PATCH, DELETE',
   origin: process.env.NODE_ENV === 'production' ? ['https://www.sagemontreal.com', 'https://ktv.sagemontreal.com', 'https://samcha.sagemontreal.com'] : '*',
   preflightContinue: false,
 };
