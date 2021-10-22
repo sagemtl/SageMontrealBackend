@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "author": "sagemtl",
   "main": "build/index.js",
+  "engines": { "node": "14.8.0" },
   "scripts": {
     "build": "tsc",
+    "postinstall": "tsc",
     "clean": "rm -rf build && rm -f *.tsbuildinfo",
     "build:clean": "npm run clean && npm run build",
     "start": "npm run build:clean && node ./build/server.js",
