@@ -37,6 +37,7 @@ router.post("/", async (req, res) => {
     const orderInfo = req.body.orderInfo;
     const orderItems = req.body.orderItems;
     const orderId = await OrderManagementService.createOrder(orderInfo, orderItems);
+    const query = OrderManagementService.updateInventory(orderItems);
     res.status(200).json({ message: "Order created successfully.", orderId });
   }
   catch(err){

@@ -33,6 +33,10 @@ class OrderManagementService {
   static async updateTrackingNumber(orderId: string, trackingNumber: string): Promise<void> {
     await orderManagementDAO.updateTrackingNumber(orderId, trackingNumber);
   }
+
+  static async updateInventory(orderItems: OrderItem[]): Promise<void> {
+    await orderManagementDAO.updateInventory(orderItems);
+  }
 }
 
 export default OrderManagementService;
