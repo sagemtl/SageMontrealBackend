@@ -48,6 +48,19 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.get("/inventory/:skuId", async (req, res) => {
+  try {
+    const skuId = req.params.skuId;
+    const inventory = await ProductManagementService.getInventory(skuId);
+    res.status(200).json(inventory);
+  }
+  catch(err){
+    console.log(err);
+    res.status(500).send(err);
+  }
+});
+
+
 // STRIPE ENDPOINTS (TO BE REMOVED ONCE LEGACY)
 
 // get stripe product
@@ -80,6 +93,7 @@ router.post("/stripe/:prod_id", async (req, res) => {
 // create stripe product
 router.post("stripe/create", async (req, res) => {
   try {
+    console.log(req.body);
     const product = await stripe.products.create(
       req.body
       );
