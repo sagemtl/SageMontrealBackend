@@ -48,81 +48,73 @@ router.post("/", async (req, res) => {
   }
 });
 
-
-
-
-// OLD ENDPOINTS
+// STRIPE ENDPOINTS (TO BE REMOVED ONCE LEGACY)
 
 // get stripe product
-router.get("/product/:prod_id", async (req, res) =>{
-  try{
+router.get("/stripe/:prod_id", async (req, res) => {
+  try {
     const product = await stripe.products.retrieve(req.params.prod_id);
     res.status(200).json(product);
   }
-  catch(err){
+  catch(err: any) {
     console.error(err);
     res.status(err.statusCode).send(err);
   }
-
 });
 
 // update stripe product
-router.post("/product/:prod_id", async (req, res) =>{
-  try{
+router.post("/stripe/:prod_id", async (req, res) => {
+  try {
     const product = await stripe.products.update(
       req.params.prod_id,
       req.body
       );
     res.status(200).json(product);
   }
-  catch(err){
+  catch(err: any) {
     console.error(err);
     res.status(err.statusCode).send(err);
   }
-
 });
 
 // create stripe product
-router.post("/create/product", async (req, res) =>{
-  try{
+router.post("stripe/create", async (req, res) => {
+  try {
     const product = await stripe.products.create(
       req.body
       );
     res.status(200).json(product);
   }
-  catch(err){
+  catch(err: any) {
     console.error(err);
     res.status(err.statusCode).send(err);
   }
-
 });
 
 // create stripe sku
-router.post("/create/sku", async (req, res) =>{
-  try{
+router.post("/stripe/sku/create", async (req, res) => {
+  try {
     const product = await stripe.skus.create(
       req.body
     );
     res.status(200).json(product);
   }
-  catch(err){
+  catch(err: any) {
     console.error(err);
     res.status(err.statusCode).send(err);
   }
-
 });
 
 // get sku
-router.get("/sku/:sku_id", async (req, res) =>{
-  try{
+router.get("/stripe/sku/:sku_id", async (req, res) => {
+  try {
     const sku = await stripe.skus.retrieve(req.params.sku_id);
     res.status(200).json(sku);
   }
-  catch(err){
+  catch(err: any) {
     console.error(err);
     res.status(err.statusCode).send(err);
   }
-
 });
 
 export default router;

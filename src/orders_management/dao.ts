@@ -9,7 +9,7 @@ class OrderManagementDAO extends DAO {
   readonly ordersTable: string = 'orders';
 
   async getOrders(): Promise<Order[]> {
-    const results = await this.query(`SELECT * FROM ${this.ordersTable}`);
+    const results = await this.query(`SELECT * FROM ${this.ordersTable} ORDER BY create_date ASC`);
     return results.rows;
   }
 
