@@ -30,7 +30,7 @@ class ProductManagementDAO extends DAO {
   }
 
   async getInventory(skuId: string): Promise<number> {
-    const query = `SELECT s.inventory FROM ${this.skusTable} s where s.id = $1;`;
+    const query = `SELECT s.inventory FROM ${this.skusTable} s where s.id::TEXT = $1;`;
     const values = [skuId];
 
     const results = await this.query(query, values);
