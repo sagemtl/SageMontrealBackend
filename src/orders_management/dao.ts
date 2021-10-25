@@ -7,6 +7,7 @@ class OrderManagementDAO extends DAO {
   readonly customersTable: string = 'customers';
   readonly orderItemsTable: string = 'order_items';
   readonly ordersTable: string = 'orders';
+  readonly skusTable: string = 'skus';
 
   async getOrders(): Promise<Order[]> {
     const results = await this.query(`SELECT * FROM ${this.ordersTable} ORDER BY create_date ASC`);
@@ -75,6 +76,15 @@ class OrderManagementDAO extends DAO {
     const query = `UPDATE ${this.ordersTable} SET tracking_number = $1 WHERE id = $2;`;
     const values = [trackingNumber, orderId];
     await this.query(query, values);
+  }
+
+  async updateInventory(orderItems: OrderItem[]): Promise<void> {
+    const orderItemsValues = orderItems.map(orderItem => `('${orderItem.sku_id}', ${orderItem.quantity})`);
+    const query = `WITH updated(sku_id, qty) AS (values ${orderItemsValues.join(', ')})
+    UPDATE ${this.skusTable} SET inventory = inventory - updated.qty FROM updated
+    WHERE (${this.skusTable}.id::TEXT = updated.sku_id);`;
+
+    await this.query(query);
   }
 }
 
