@@ -166,39 +166,31 @@ router.post("/create_order", async (req, res) => {
 
  // Callback when the shipping address is updated.
 router.post("/calculate_shipping", async (req, res) => {
-  const { shippingAddress, total, shipByMail, currency } = req.body;
+  const { shippingAddress, total, currency } = req.body;
   try {
     if (currency === 'CAD') {
       if (shippingAddress.country === 'CA') {
         const options = [];
-        if (shipByMail) {
-          options.push({
-            id: 'mail-shipping',
-            label: 'Mail',
-            detail: 'Arrives in 5 to 10 business days',
-            amount: 500,
-          });
-        }
-        if (total >= 70) {
+        if (total >= 120) {
           options.push({
             id: 'free-shipping',
             label: 'Tracked Parcel',
-            detail: 'Arrives in 2 to 4 business days',
+            detail: 'Arrives in 3 to 5 business days',
             amount: 0,
           });
         } else {
           options.push({
             id: 'tracked-parcel',
             label: 'Tracked Parcel',
-            detail: 'Arrives in 2 to 4 business days',
+            detail: 'Arrives in 3 to 5 business days',
             amount: 1000,
           });
         }
         res.status(200).json({ supportedShippingOptions: options });
       }
-      else if (shippingAddress.country === 'US') {
+      else {
         const options = [];
-        if (total >= 90) {
+        if (total >= 150) {
           options.push({
             id: 'free-shipping-us',
             label: 'Tracked Parcel',
@@ -210,53 +202,35 @@ router.post("/calculate_shipping", async (req, res) => {
             id: 'tracked-parcel-us',
             label: 'Tracked Parcel',
             detail: 'Arrives in 7 to 14 business days',
-            amount: 600,
+            amount: 2000,
           });
         }
         res.status(200).json({ supportedShippingOptions: options });
       }
-      else {
-        res.status(200).json({ supportedShippingOptions: [
-          {
-            id: 'tracked-parcel-intl',
-            label: 'Tracked Parcel',
-            detail: 'Arrives in 7 to 21 business days',
-            amount: 4000,
-          },
-        ]});
-      }
-    // US SHIPPING
+    // USD SHIPPING
     } else {
       if (shippingAddress.country === 'CA') {
         const options = [];
-        if (shipByMail) {
-          options.push({
-            id: 'mail-shipping',
-            label: 'Mail',
-            detail: 'Arrives in 5 to 10 business days',
-            amount: 400,
-          });
-        }
-        if (total >= 55) {
+        if (total >= 100) {
           options.push({
             id: 'free-shipping',
             label: 'Tracked Parcel',
-            detail: 'Arrives in 2 to 4 business days',
+            detail: 'Arrives in 3 to 5 business days',
             amount: 0,
           });
         } else {
           options.push({
             id: 'tracked-parcel',
             label: 'Tracked Parcel',
-            detail: 'Arrives in 2 to 4 business days',
+            detail: 'Arrives in 3 to 5 business days',
             amount: 800,
           });
         }
         res.status(200).json({ supportedShippingOptions: options });
       }
-      else if (shippingAddress.country === 'US') {
+      else {
         const options = [];
-        if (total >= 75) {
+        if (total >= 120) {
           options.push({
             id: 'free-shipping-us',
             label: 'Tracked Parcel',
@@ -268,22 +242,11 @@ router.post("/calculate_shipping", async (req, res) => {
             id: 'tracked-parcel-us',
             label: 'Tracked Parcel',
             detail: 'Arrives in 7 to 14 business days',
-            amount: 500,
+            amount: 1500,
           });
         }
         res.status(200).json({ supportedShippingOptions: options });
       }
-      else {
-        res.status(200).json({ supportedShippingOptions: [
-          {
-            id: 'tracked-parcel-intl',
-            label: 'Tracked Parcel',
-            detail: 'Arrives in 7 to 21 business days',
-            amount: 3200,
-          },
-        ]});
-      }
-
     }
   } catch (err) {
     console.error(err);
