@@ -166,11 +166,19 @@ router.post("/create_order", async (req, res) => {
 
  // Callback when the shipping address is updated.
 router.post("/calculate_shipping", async (req, res) => {
-  const { shippingAddress, total, currency } = req.body;
+  const { shippingAddress, total, shipByMail, currency } = req.body;
   try {
     if (currency === 'CAD') {
       if (shippingAddress.country === 'CA') {
         const options = [];
+        if (shipByMail) {
+          options.push({
+            id: 'mail-shipping',
+            label: 'Mail',
+            detail: 'Arrives in 5 to 10 business days',
+            amount: 200,
+          });
+        }
         if (total >= 120) {
           options.push({
             id: 'free-shipping',
@@ -190,6 +198,14 @@ router.post("/calculate_shipping", async (req, res) => {
       }
       else {
         const options = [];
+        if (shipByMail) {
+          options.push({
+            id: 'mail-shipping',
+            label: 'Mail',
+            detail: 'Arrives in 5 to 10 business days',
+            amount: 300,
+          });
+        }
         if (total >= 150) {
           options.push({
             id: 'free-shipping-us',
@@ -211,6 +227,14 @@ router.post("/calculate_shipping", async (req, res) => {
     } else {
       if (shippingAddress.country === 'CA') {
         const options = [];
+        if (shipByMail) {
+          options.push({
+            id: 'mail-shipping',
+            label: 'Mail',
+            detail: 'Arrives in 5 to 10 business days',
+            amount: 200,
+          });
+        }
         if (total >= 100) {
           options.push({
             id: 'free-shipping',
@@ -230,6 +254,14 @@ router.post("/calculate_shipping", async (req, res) => {
       }
       else {
         const options = [];
+        if (shipByMail) {
+          options.push({
+            id: 'mail-shipping',
+            label: 'Mail',
+            detail: 'Arrives in 5 to 10 business days',
+            amount: 300,
+          });
+        }
         if (total >= 120) {
           options.push({
             id: 'free-shipping-us',
