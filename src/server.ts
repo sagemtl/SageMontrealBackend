@@ -11,6 +11,14 @@ import post_its_routes from './routes/postIts';
 const app = express();
 import 'dotenv/config';
 
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://samcha.sageismism.com',
+  'https://www.sageismism.com',
+  'https://playground.sageismism.com',
+  'https://ktv.sageismism.com',
+];
+
 const options: CorsOptions = {
   allowedHeaders: [
     'Origin',
@@ -21,13 +29,13 @@ const options: CorsOptions = {
   ],
   credentials: true,
   methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
-  origin: process.env.ALLOWED_ORIGIN,
+  origin: allowedOrigins,
   preflightContinue: false,
 };
 
 // Middlewares
-app.use(express.json({ limit: '5mb' }));
 app.use(cors(options));
+app.use(express.json({ limit: '5mb' }));
 
 // Routes Middleware
 app.use('/products', products_routes);
