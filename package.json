@@ -8,6 +8,7 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "buffer-equal-constant-time": "^1.0.1",
     "concurrently": "^5.1.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",

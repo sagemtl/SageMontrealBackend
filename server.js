@@ -1,25 +1,22 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-const cors = require('cors');
+const cors = require("cors");
 require("dotenv/config");
-const nodemailer = require('nodemailer');
-
-
+const nodemailer = require("nodemailer");
 
 // Import Routes
-const inventory_routes = require('./routes/inventory');
-const orders_routes = require('./routes/orders');
-const ktv_routes = require('./routes/ktv');
+const inventory_routes = require("./routes/inventory");
+const orders_routes = require("./routes/orders");
+const ktv_routes = require("./routes/ktv");
 
 // Middlewares
-app.use(express.json({limit: "5mb"}));
+app.use(express.json({ limit: "5mb" }));
 app.use(cors());
 
 // Routes Middleware
-app.use('/inventory-api', inventory_routes);
-app.use('/orders-api', orders_routes);
-app.use('/ktv-api', ktv_routes);
-
+app.use("/inventory-api", inventory_routes);
+app.use("/orders-api", orders_routes);
+app.use("/ktv-api", ktv_routes);
 
 // Contact endpoint
 let transporter = nodemailer.createTransport({
@@ -28,8 +25,8 @@ let transporter = nodemailer.createTransport({
   secure: true,
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD
-  }
+    pass: process.env.EMAIL_PASSWORD,
+  },
 });
 
 app.post("/contact", (req, res) => {
@@ -40,18 +37,20 @@ app.post("/contact", (req, res) => {
     from: process.env.EMAIL_USER,
     to: process.env.EMAIL_USER,
     subject: subject,
-    text: content
-  }
+    text: content,
+  };
 
   transporter.sendMail(mail, (err, data) => {
     if (err) {
       res.status(500).send(err);
     } else {
-      res.status(200).send({ message: 'Contact email sent successfully', data });
+      res
+        .status(200)
+        .send({ message: "Contact email sent successfully", data });
     }
-  })
-})
+  });
+});
 
 // PORT, Listen
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`App running on PORT ${port}`));
