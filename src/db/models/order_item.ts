@@ -3,6 +3,6 @@ export class OrderItem {
     public sku_id: string,
     public quantity: number,
     public adjusted_price: number,
-    public order_id?: string,
-  ) { }
+    public order_id?: string
+  ) {}
 }

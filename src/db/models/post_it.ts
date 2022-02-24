@@ -6,8 +6,8 @@ export class PostIt {
     public createdDate: string,
     public zIndex?: number,
     public color?: string,
-    public readonly id?: string,
-  ) { }
+    public readonly id?: string
+  ) {}
 
   static toDomainObject(row: PostItRow): PostIt {
     return {
@@ -17,8 +17,8 @@ export class PostIt {
       yCoord: row.y_coord,
       createdDate: row.created_date,
       color: row.color,
-      id: row.id
-    }
+      id: row.id,
+    };
   }
 
   static toDbRow(postIt: PostIt): PostItRow {
@@ -29,8 +29,8 @@ export class PostIt {
       y_coord: postIt.yCoord,
       created_date: postIt.createdDate,
       color: postIt.color,
-      id: postIt.id
-    }
+      id: postIt.id,
+    };
   }
 }
 

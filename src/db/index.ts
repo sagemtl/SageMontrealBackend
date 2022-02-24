@@ -20,7 +20,7 @@ export {
 };
 
 const pool = new Pool({
-  ssl: { rejectUnauthorized: false }
+  ssl: { rejectUnauthorized: false },
 });
 
 class DAO {
@@ -28,7 +28,10 @@ class DAO {
 
   constructor() {
     this.pool = pool;
-    this.pool.on('error', (err, client) => `Error, ${err}, on idle client${client}`);
+    this.pool.on(
+      'error',
+      (err, client) => `Error, ${err}, on idle client${client}`
+    );
   }
 
   async query(text: string, params?: any) {
@@ -37,7 +40,7 @@ class DAO {
     const duration = Date.now() - start;
     console.log('executed query', { text, duration, rows: res.rowCount });
     return res;
-  };
+  }
 }
 
 export default DAO;

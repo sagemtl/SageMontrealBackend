@@ -6,10 +6,10 @@ import products_routes from './routes/products';
 import orders_routes from './routes/orders';
 import ktv_routes from './routes/ktv';
 import mailer_routes from './routes/mailer';
-import post_its_routes from './routes/postIts'
+import post_its_routes from './routes/postIts';
 
 const app = express();
-import "dotenv/config";
+import 'dotenv/config';
 
 const options: CorsOptions = {
   allowedHeaders: [
@@ -26,7 +26,7 @@ const options: CorsOptions = {
 };
 
 // Middlewares
-app.use(express.json({limit: "5mb"}));
+app.use(express.json({ limit: '5mb' }));
 app.use(cors(options));
 
 // Routes Middleware

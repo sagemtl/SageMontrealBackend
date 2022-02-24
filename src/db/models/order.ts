@@ -23,6 +23,6 @@ export class Order {
     public shipping_method: string,
     public shipping_price: number,
     public shipping_cost: string,
-    public created_date?: string,
-  ) { }
+    public created_date?: string
+  ) {}
 }

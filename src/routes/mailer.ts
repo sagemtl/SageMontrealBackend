@@ -1,4 +1,4 @@
-import express from "express";
+import express from 'express';
 import nodemailer from 'nodemailer';
 
 const router = express.Router();
@@ -10,11 +10,11 @@ let transporter = nodemailer.createTransport({
   secure: true,
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD
-  }
+    pass: process.env.EMAIL_PASSWORD,
+  },
 });
 
-router.post("/contact", (req, res) => {
+router.post('/contact', (req, res) => {
   const { name, email, subject, message } = req.body;
   var content = `name: ${name} \n email: ${email} \n subject: ${subject} \n message: ${message}`;
 
@@ -22,16 +22,18 @@ router.post("/contact", (req, res) => {
     from: process.env.EMAIL_USER,
     to: process.env.EMAIL_USER,
     subject: subject,
-    text: content
-  }
+    text: content,
+  };
 
   transporter.sendMail(mail, (err, data) => {
     if (err) {
       res.status(500).send(err);
     } else {
-      res.status(200).send({ message: 'Contact email sent successfully', data });
+      res
+        .status(200)
+        .send({ message: 'Contact email sent successfully', data });
     }
-  })
-})
+  });
+});
 
 export default router;

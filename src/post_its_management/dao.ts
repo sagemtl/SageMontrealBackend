@@ -1,7 +1,6 @@
 import DAO, { PostIt } from '../db';
 
 class PostItManagementDAO extends DAO {
-
   readonly postItTable: string = 'post_its';
 
   async getPostIts(): Promise<PostIt[]> {
@@ -15,10 +14,10 @@ class PostItManagementDAO extends DAO {
       values ($1, $2, $3, $4) RETURNING id;`;
 
     const values = [
-      postIt.textContent, 
-      postIt.xCoord, 
-      postIt.yCoord, 
-      postIt.color
+      postIt.textContent,
+      postIt.xCoord,
+      postIt.yCoord,
+      postIt.color,
     ];
 
     const results = await this.query(query, values);

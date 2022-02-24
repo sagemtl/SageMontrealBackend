@@ -19,4 +19,4 @@ export interface OrderItemInfo {
 export type OrderDetails = {
   orderInfo: OrderInfo;
   orderItems: OrderItemInfo[];
-}
+};

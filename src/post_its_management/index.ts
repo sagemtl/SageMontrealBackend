@@ -1,10 +1,9 @@
-import { PostIt } from "../db";
-import PostItManagementDAO from "./dao";
+import { PostIt } from '../db';
+import PostItManagementDAO from './dao';
 
 const postItManagementDAO = new PostItManagementDAO();
 
 class PostItManagementService {
-
   static async getPostIts(): Promise<PostIt[]> {
     return postItManagementDAO.getPostIts();
   }
